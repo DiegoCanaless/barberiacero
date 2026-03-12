@@ -1,14 +1,9 @@
+import { UserResponseDTO } from "@/types/entities/user/UserResponseDTO";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface User {
-    id: number;
-    name: string
-    email: string;
-    role: string;
-}
 
 interface AuthState {
-    user: User | null;
+    user: UserResponseDTO | null;
     isAuthenticated: boolean;
 }
 
@@ -21,7 +16,7 @@ const authSlice = createSlice({
     name: "Auth",
     initialState,
     reducers: {
-        loginSuccess(state, action: PayloadAction<User>) {
+        loginSuccess(state, action: PayloadAction<UserResponseDTO>) {
             state.user = action.payload
             state.isAuthenticated = true;
         },

@@ -7,15 +7,19 @@ import { FaX, FaEnvelope, FaLock } from "react-icons/fa6"
 import { useDispatch } from "react-redux";
 import { ToastState } from "../ui/feedback/Toast";
 import { useRouter } from "next/navigation";
+import { AppDispatch } from "@/lib/redux/store";
+import { LoginDTO } from "@/types/entities/auth/LoginDTO";
+import { AuthResponseDTO } from "@/types/entities/auth/AuthResponseDTO";
 
 interface LoginModalProps {
   onClose: () => void;
+  openRegister: () => void
   onToast: (text: string, state: ToastState) => void;
 }
 
-const LoginModal = ({ onClose, onToast }: LoginModalProps) => {
+const LoginModal = ({ onClose, onToast, openRegister }: LoginModalProps) => {
 
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   const router = useRouter()
 
@@ -37,7 +41,7 @@ const LoginModal = ({ onClose, onToast }: LoginModalProps) => {
               password: "",
             }}
             validationSchema={loginSchema}
-            onSubmit={async (values) => {
+            onSubmit={async (values: LoginDTO) => {
               try {
                 const res = await fetch("http://localhost:3002/auth/login", {
                   method: "POST",
@@ -58,7 +62,7 @@ const LoginModal = ({ onClose, onToast }: LoginModalProps) => {
                   return;
                 }
 
-                const data = await res.json();
+                const data: AuthResponseDTO = await res.json();
                 console.log("DATA BACKEND:", data);
 
                 onToast("Logeado con exito", ToastState.SUCCESS);
@@ -70,9 +74,16 @@ const LoginModal = ({ onClose, onToast }: LoginModalProps) => {
 
 
                 onClose();
-              } catch (error: any) {
-                console.error(error)
+              } catch (error: unknown) {
+
+                if (error instanceof Error) {
+                  onToast(error.message, ToastState.ERROR)
+                } else {
+                  onToast("Ocurrió un error inesperado", ToastState.ERROR)
+                }
+
               }
+
             }}
           >
             {({ values }) => (
@@ -91,10 +102,17 @@ const LoginModal = ({ onClose, onToast }: LoginModalProps) => {
 
                 <button type="submit" className="bg-foreground text-background mt-4 w-full cursor-pointer py-2 px-4 text-sm font-semibold rounded-xs">INGRESAR</button>
               </Form>
+
+
             )}
 
 
           </Formik>
+          <button className="flex justify-center mt-6 cursor-pointer w-full text-sm hover:text-white"
+            onClick={() => {
+              openRegister();
+            }}
+          >¿Aun no tienes cuenta?</button>
 
         </div>
       </div>

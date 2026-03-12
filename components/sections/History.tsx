@@ -3,7 +3,7 @@ import { domine } from "../ui/typography/fonts"
 
 const History = () => {
     return (
-        <section className="mt-20">
+        <section  id="nosotros" className="mt-20">
             <div className="container mx-auto px-6 lg:px-15">
                 <div className="w-full rounded-lg flex flex-col items-center lg:flex-row lg:items-center lg:gap-16">
                     <img 

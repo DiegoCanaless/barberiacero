@@ -1,13 +1,17 @@
-import Navbar from "@/components/layout/Navbar";
+
 import { jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import "../globals.css";
 
 export default async function PrivateLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
+
+    
+
     const token = (await cookies()).get("token")?.value;
 
     if (!token) redirect("/");
@@ -20,10 +24,15 @@ export default async function PrivateLayout({
     } catch {
         redirect("/");
     }
+
+    
+
+
+
     return (
         <>
-            <Navbar forceDark />
-            <main className="min-h-screen pt-20">
+            <main className="pt-24 min-h-screen">
+
                 {children}
             </main>
         </>

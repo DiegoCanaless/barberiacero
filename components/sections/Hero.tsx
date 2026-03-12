@@ -8,31 +8,41 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/lib/redux/store";
 import LoginModal from "../auth/LoginModal";
 import TurnoModal from "../ui/molecules/TurnoModal";
+import Toast, { ToastState } from "../ui/feedback/Toast";
+import RegisterModal from "../auth/RegisterModal";
 
 const Hero = () => {
 
 
-    const [login, setLogin] = useState<boolean>(false);
+    const [authModal, setAuthModal] = useState<"login" | "register" | null>(null);
+
     const [modalTurno, setModalTurno] = useState<boolean>(false)
-    
+
     const dispatch = useDispatch()
-    
+
 
     const { user, isAuthenticated } = useSelector(
         (state: RootState) => state.auth
     )
 
     const handleReservarClick = () => {
-        if(!isAuthenticated){
-            setLogin(true)
+        if (!isAuthenticated) {
+            setAuthModal("login")
         } else {
             setModalTurno(true)
         }
     }
 
+    const [toast, setToast] = useState<{
+        text: string;
+        state: ToastState;
+    } | null>(null);
+
+
     return (
-        <section className="min-h-screen relative w-full">
-            <img src="./FotoPrincipal.jpg" alt="" className="w-full h-screen object-cover filter grayscale absolute z-0" />
+        <section className="relative w-full h-screen overflow-hidden">
+            <img src="/FotoPrincipal.jpg" alt="" className="absolute inset-0 w-full h-full object-cover grayscale" />
+
             <div className="absolute inset-0 h-screen bg-linear-to-b from-transparent to-black z-10"></div>
             <div className="flex flex-col items-center justify-center text-center w-full h-screen relative z-20 px-4 text-white">
                 <p className="border-b-2 border-white mb-4">Estilo Clásico & Moderno</p>
@@ -45,12 +55,36 @@ const Hero = () => {
                 <ReservationButton big={false} onClick={() => handleReservarClick()} text="RESERVAR TURNO" className="bg-white text-black text-md " icon={<FaAngleRight />} />
             </div>
 
-            {login && (
-                <LoginModal onClose={() => setLogin(false)} />
+            {authModal === "login" && (
+                <LoginModal
+                    onClose={() => setAuthModal(null)}
+                    openRegister={() => setAuthModal("register")}
+                    onToast={(text, state) => setToast({ text, state })}
+                />
             )}
 
+            {authModal === "register" && (
+                <RegisterModal
+                    onClose={() => setAuthModal(null)}
+                    openLogin={() => setAuthModal("login")}
+                    onToast={(text, state) => setToast({ text, state })}
+                />
+            )}
+
+
+
             {modalTurno && (
-                <TurnoModal onClose={() => setModalTurno(false)} />
+                <TurnoModal onClose={() => setModalTurno(false)}
+                    onToast={(text, state) => setToast({text,state})}
+                />
+            )}
+
+            {toast && (
+                <Toast
+                    text={toast.text}
+                    state={toast.state}
+                    onClose={() => setToast(null)}
+                />
             )}
         </section>
     )

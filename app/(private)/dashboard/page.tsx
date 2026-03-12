@@ -5,6 +5,7 @@ import UsuarioPanel from "@/components/dashboard/UsuarioPanel";
 import BarberoPanel from "@/components/dashboard/BarberoPanel";
 
 export default async function DashboardPage() {
+    
     const token = (await cookies()).get("token")?.value;
 
     const { payload } = await jwtVerify(
@@ -17,8 +18,10 @@ export default async function DashboardPage() {
     const user = {
         id: payload.id as string,
         name: payload.name as string,
+        apellido: payload.apellido as string,
         email: payload.email as string,
         role: payload.role as string,
+        telefono: payload.telefono as string
     };
 
     if (user.role === "admin") return <SuperAdminPanel />;

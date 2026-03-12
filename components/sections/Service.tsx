@@ -1,11 +1,11 @@
 
-import { FaScissors, FaDroplet, FaBolt } from "react-icons/fa6";
+import { FaDroplet, FaBolt, FaScissors } from "react-icons/fa6";
 import CardService from "../ui/molecules/CardService";
 import { domine } from "../ui/typography/fonts";
 
 const Service = () => {
     return (
-        <section className="flex flex-col items-center mt-20">
+        <section  id="servicios" className="flex flex-col items-center mt-20">
             <p className="text-xs mb-2">EXPERIENCIA PREMIUM</p>
             <h2 className={`text-3xl text-center font-extrabold border-b-3 pb-2 border-foreground mb-5 ${domine.className}`}>NUESTROS <br className="sm:hidden"/> SERVICIOS</h2>
 

@@ -11,7 +11,7 @@ const Location = () => {
     ]
 
     return (
-        <section className=" flex px-6 mt-15 flex-col pb-8 md:flex-row md:gap-5 md:items-center md:justify-around">
+        <section  id="contacto" className=" flex px-6 mt-15 flex-col pb-8 md:flex-row md:gap-5 md:items-center md:justify-around">
             <div className="flex flex-col">
                 <p className="text-xs font-bold mb-2">UBICACION</p>
                 <h3 className={`text-2xl font-bold mb-4 ${domine.className}`}>VÍSITANOS</h3>
