@@ -1,6 +1,6 @@
 import * as Yup from "yup";
 
-export const registerSchema = Yup.object({
+export const barberSchema = Yup.object({
     name: Yup.string()
         .trim()
         .min(3, "El nombre debe tener al menos 3 caracteres")
@@ -8,8 +8,8 @@ export const registerSchema = Yup.object({
 
     apellido: Yup.string()
         .trim()
-        .min(3, "El apellido debe tener al menos 3 caracteres")
-        .required("El apellido es obligatorio"),
+        .min(3, "El nombre debe tener al menos 3 caracteres")
+        .required("El nombre es obligatorio"),
 
     email: Yup.string()
         .trim()
@@ -27,10 +27,6 @@ export const registerSchema = Yup.object({
         .trim()
         .min(5, "La contraseña debe tener al menos 5 caracteres")
         .required("La contraseña es requerida"),
-
-    repeatPassword: Yup.string()
-        .oneOf([Yup.ref("password")], "Las contraseñas deben coincidir")
-        .required("Debes repetir la contraseña")
 
 })
 

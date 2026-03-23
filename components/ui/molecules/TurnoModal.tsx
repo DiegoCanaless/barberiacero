@@ -54,7 +54,7 @@ const TurnoModal = ({ onClose, onToast }: TurnoModal) => {
 
         const barbers = async () => {
             try {
-                const res = await fetch("http://localhost:3002/barberos/", {
+                const res = await fetch("http://localhost:3002/usuarios/getBarbers", {
                     credentials: "include"
                 })
 

@@ -1,3 +1,4 @@
+import { State } from "@/types/enum/estado";
 
 
 export interface UserResponseDTO{
@@ -7,5 +8,6 @@ export interface UserResponseDTO{
     email: string;
     telefono: string;
     role: "usuario" | "admin" | "barber";
+    estado: State
     created_at: string
 }

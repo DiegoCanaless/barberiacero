@@ -25,7 +25,6 @@ export default function AuthProvider({
 
                 const user = await res.json()
 
-                console.log("Revisado el Logeo pibe")
                 dispatch(loginSuccess(user))
 
             } catch (error) {

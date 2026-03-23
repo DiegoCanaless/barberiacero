@@ -23,8 +23,11 @@ const RegisterModal = ({ onClose, onToast, openLogin }: RegisterModalProps) => {
     return (
         <>
             <div className="fixed inset-0 bg-black/50 z-40" onClick={onClose} />
-            <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
-                <div className="relative w-full max-w-lg rounded-xl bg-background p-6 shadow-xl text-foreground">
+
+            <div className="fixed inset-0 z-50 flex items-center justify-center px-4 overflow-y-auto">
+                <div className="relative w-full max-w-lg rounded-xl bg-background p-6 shadow-xl text-foreground max-h-[90vh] overflow-y-auto my-10">
+
+
                     <button onClick={onClose} className="absolute top-5 right-5 cursor-pointer text-gray-400 hover:text-gray-600" >
                         <FaX size={18} />
                     </button>
@@ -66,14 +69,12 @@ const RegisterModal = ({ onClose, onToast, openLogin }: RegisterModalProps) => {
                                 }
 
                                 const info = await res.json();
-                                console.log("DATA BACKEND:", info);
 
                                 onToast("Registrado con exito", ToastState.SUCCESS);
                                 dispatch(loginSuccess(info.user))
 
 
 
-                                console.log("REDIRIGIENDO");
                                 router.replace("/dashboard");
 
 
@@ -96,41 +97,41 @@ const RegisterModal = ({ onClose, onToast, openLogin }: RegisterModalProps) => {
 
                                 <div className="flex flex-col gap-1">
                                     <label className="text-base flex items-center gap-2"><FaUser /> Nombre</label>
-                                    <Field className="border border-foreground px-2 py-1.5 text-start rounded-xs" name="name" type="text" placeholder="John" />
+                                    <Field className=" w-full px-3 py-2  rounded-md  border border-gray-300  bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-neutral-500 transition duration-200 " name="name" type="text" placeholder="John" />
                                     <ErrorMessage name="name" component="p" className="text-red-500 text-xs" />
                                 </div>
 
                                 <div className="flex flex-col gap-1">
                                     <label className="text-base flex items-center gap-2"><FaUser /> Apellido</label>
-                                    <Field className="border border-foreground px-2 py-1.5 text-start rounded-xs" name="apellido" type="text" placeholder="Doe" />
+                                    <Field className=" w-full px-3 py-2  rounded-md  border border-gray-300  bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-neutral-500 transition duration-200 " name="apellido" type="text" placeholder="Doe" />
                                     <ErrorMessage name="apellido" component="p" className="text-red-500 text-xs" />
                                 </div>
 
                                 <div className="flex flex-col gap-1">
                                     <label className="text-base flex items-center gap-2"><FaEnvelope /> Email</label>
-                                    <Field className="border border-foreground px-2 py-1.5 text-start rounded-xs" name="email" type="email" placeholder="correo.gmail.com" />
+                                    <Field className=" w-full px-3 py-2  rounded-md  border border-gray-300  bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-neutral-500 transition duration-200 " name="email" type="email" placeholder="correo.gmail.com" />
                                     <ErrorMessage name="email" component="p" className="text-red-500 text-xs" />
                                 </div>
 
                                 <div className="flex flex-col gap-1">
                                     <label className="text-base flex items-center gap-2"><FaPhone /> Telefono</label>
-                                    <Field className="border border-foreground px-2 py-1.5 text-start rounded-xs" name="telefono" type="tel" placeholder="*****" />
+                                    <Field className=" w-full px-3 py-2  rounded-md  border border-gray-300  bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-neutral-500 transition duration-200 " name="telefono" type="tel" placeholder="*****" />
                                     <ErrorMessage name="telefono" component="p" className="text-red-500 text-xs" />
                                 </div>
 
                                 <div className="flex flex-col gap-1">
                                     <label className="text-base flex items-center gap-2"><FaLock /> Contraseña</label>
-                                    <Field className="border border-foreground px-2 py-1.5 text-start rounded-xs" name="password" type="password" placeholder="*****" />
+                                    <Field className=" w-full px-3 py-2  rounded-md  border border-gray-300  bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-neutral-500 transition duration-200 " name="password" type="password" placeholder="*****" />
                                     <ErrorMessage name="password" component="p" className="text-red-500 text-xs" />
                                 </div>
 
                                 <div className="flex flex-col gap-1">
                                     <label className="text-base flex items-center gap-2"><FaLock /> Repetir Contraseña</label>
-                                    <Field className="border border-foreground px-2 py-1.5 text-start rounded-xs" name="repeatPassword" type="password" placeholder="*****" />
+                                    <Field className=" w-full px-3 py-2  rounded-md  border border-gray-300  bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-neutral-500 transition duration-200 " name="repeatPassword" type="password" placeholder="*****" />
                                     <ErrorMessage name="repeatPassword" component="p" className="text-red-500 text-xs" />
                                 </div>
 
-                                <button type="submit" className="bg-foreground text-background mt-4 w-full cursor-pointer py-2 px-4 text-sm font-semibold rounded-xs">INGRESAR</button>
+                                <button type="submit" className="bg-foreground text-background mt-4 w-full cursor-pointer py-2 px-4 text-sm font-semibold rounded-xs">CREAR</button>
                             </Form>
                         )}
                     </Formik>

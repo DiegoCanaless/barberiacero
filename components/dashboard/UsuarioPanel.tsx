@@ -39,14 +39,12 @@ export default function UsuarioPanel({ user }: UsuarioPanelProps) {
                 });
 
                 const data: TurnoResponseDTO[] = await res.json();
-                console.log(data)
                 setTurnos(data)
 
                 const turnoReservado = data.find(
                     (t) => t.estado === "Reservado"
                 );
 
-                console.log(turnoReservado)
 
                 setReservado(turnoReservado || null)
 
@@ -149,7 +147,7 @@ export default function UsuarioPanel({ user }: UsuarioPanelProps) {
                                     </div>
                                     <div className="flex flex-col">
                                         <p className="font-black">{reserva.servicio}</p>
-                                        <p className="text-xs">con {reserva.barbero}</p>
+                                        <p className="text-xs">con {reserva.barbero.name}</p>
                                     </div>
                                 </div>
 
@@ -222,7 +220,7 @@ export default function UsuarioPanel({ user }: UsuarioPanelProps) {
                                         </div>
                                         <div className="flex flex-col">
                                             <p>{e.servicio}</p>
-                                            <p className="text-xs">con {e.barbero}</p>
+                                            <p className="text-xs">con {e.barbero.name}</p>
                                         </div>
                                     </div>
 

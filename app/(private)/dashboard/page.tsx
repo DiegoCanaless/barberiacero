@@ -13,8 +13,6 @@ export default async function DashboardPage() {
         new TextEncoder().encode(process.env.JWT_SECRET!)
     );
 
-    console.log(payload)
-
     const user = {
         id: payload.id as string,
         name: payload.name as string,

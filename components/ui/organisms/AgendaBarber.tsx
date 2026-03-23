@@ -1,0 +1,96 @@
+import { RootState } from "@/lib/redux/store";
+import { TurnoResponseDTO } from "@/types/entities/turno/TurnoResponseDTO";
+import { useEffect, useState } from "react"
+import { useSelector } from "react-redux"
+import TablaDatos from "./TablaDatos";
+import { RoleUser } from "@/types/enum/roleUser";
+
+
+const AgendaBarber = () => {
+    const [turnos, setTurnos] = useState<TurnoResponseDTO[]>([])
+    const [historial, setHistorial] = useState<TurnoResponseDTO[]>([])
+    const [seleccion, setSeleccion] = useState<string>("Proximos")
+    const [page, setPage] = useState(1)
+
+    const [pagination, setPagination] = useState({
+        total: 0,
+        page: 1,
+        limit: 15,
+        totalPages: 1
+    })
+
+    const { user, isAuthenticated } = useSelector(
+        (state: RootState) => state.auth
+    );
+
+    useEffect(() => {
+        const traerData = async () => {
+            try {
+
+                if (seleccion === "Historial") {
+                    const res = await fetch(
+                        `http://localhost:3002/turnos/barbero?estado=historial&page=${page}&limit=10`,
+                        { credentials: "include" }
+                    );
+
+                    const data = await res.json();
+                    setHistorial(data.data);
+                    setPagination(data.pagination);
+
+                } else {
+                    const res = await fetch(
+                        `http://localhost:3002/turnos/barbero?estado=activo`,
+                        { credentials: "include" }
+                    );
+
+                    const data = await res.json();
+                    setTurnos(data);
+                }
+
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        traerData();
+
+    }, [seleccion, page]);
+
+    return (
+        <>
+            <div className="mt-10 mb-10 w-full max-w-6xl mx-auto px-4">
+                <div className="flex flex-col  gap-6 sm:flex-row sm:items-center sm:justify-between mb-8">
+                    <div className="flex flex-col items-center justify-center  w-full sm:w-40  py-6  rounded-md  bg-card  border border-neutral-800 shadow-sm">
+                        <p className="text-4xl sm:text-3xl font-black">{turnos.length}</p>
+                        <p className="text-muted-foreground text-xs tracking-wider">Turnos programados</p>
+                    </div>
+
+
+                </div>
+
+                <div className="flex gap-8 justify-center border-b-2  border-white md:justify-start">
+                    <p onClick={() => (setSeleccion("Proximos"), setPage(1))} className={`transition hover:text-accent  hover:cursor-pointer ${seleccion === "Proximos" ? "border-b-2 border-white font-black" : ""}`}>PRÓXIMOS</p>
+                    <p onClick={() => (setSeleccion("Historial"), setPage(1))} className={`transition hover:text-accent  hover:cursor-pointer ${seleccion === "Historial" ? "border-b-2 border-white font-black" : ""}`}>HISTORIAL</p>
+                </div>
+
+                {seleccion === "Proximos" ? (
+                    <TablaDatos data={turnos} role={RoleUser.BARBER} />
+                    
+                ) : <>
+                    <TablaDatos data={historial} role={RoleUser.BARBER} />
+                    <div className="flex justify-center items-center gap-4 mt-6">
+                        <button disabled={page === 1} onClick={() => setPage(page - 1)} className="hover:border-white transition cursor-pointer px-4 py-2 border rounded disabled:opacity-40">Anterior</button>
+                        <span>Página {pagination.page} de {pagination.totalPages}</span>
+                        <button disabled={page === pagination.totalPages} onClick={() => setPage(page + 1)} className="hover:border-white transition cursor-pointer px-4 py-2 border rounded disabled:opacity-40">Siguiente</button>
+                    </div>
+
+
+                </>}
+
+
+            </div>
+        </>
+    )
+}
+
+export default AgendaBarber
