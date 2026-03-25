@@ -43,7 +43,6 @@ const TurnoModal = ({ onClose, onToast }: TurnoModal) => {
                 });
 
                 const data: UserResponseDTO = await res.json();
-                console.log(data)
                 setUser(data)
             } catch (error: unknown) {
                 console.error(error)
@@ -59,7 +58,6 @@ const TurnoModal = ({ onClose, onToast }: TurnoModal) => {
                 })
 
                 const data: UserResponseDTO[] = await res.json();
-                console.log("BARBEROS ", data)
                 setBarberos(data)
 
             } catch (error: unknown) {
@@ -93,7 +91,6 @@ const TurnoModal = ({ onClose, onToast }: TurnoModal) => {
                         }}
                         validationSchema={turnoSchema}
                         onSubmit={async (values) => {
-                            console.log("SUBMIT", values)
                             try {
 
                                 if (!values.horario) {
@@ -147,7 +144,6 @@ const TurnoModal = ({ onClose, onToast }: TurnoModal) => {
                                         );
 
                                         const data: ServicioResponseDTO[] = await res.json();
-                                        console.log("SERVICIOS", data);
                                         setServicio(data);
                                     } catch (error: unknown) {
                                         console.error(error);
@@ -167,7 +163,6 @@ const TurnoModal = ({ onClose, onToast }: TurnoModal) => {
 
                                         const data = await res.json()
 
-                                        console.log("Horarios Barbero", data)
 
                                         setDiasBarbero(data)
 
@@ -196,7 +191,6 @@ const TurnoModal = ({ onClose, onToast }: TurnoModal) => {
 
                                         const data = await res.json()
 
-                                        console.log("HORARIOS DISPONIBLES", data)
 
                                         sethorariosDisponibles(data)
 

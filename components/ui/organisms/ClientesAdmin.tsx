@@ -42,7 +42,6 @@ const ClientesAdmin = () => {
                 setUser(users)
                 setPagination(data.pagination)
 
-                console.log(users)
 
             } catch (error: unknown) {
                 console.error(error)

@@ -27,7 +27,6 @@ const GestionAdmin = () => {
         });
         const data: TurnoResponseDTO[] = await res.json();
         setTurnos(data)
-        console.log(data);
       } catch (error: unknown) {
         console.error(error);
       }

@@ -34,7 +34,6 @@ const BarberosAdmin = () => {
         }
 
         const data = await res.json()
-        console.log(data)
 
         setBarberos(data)
 
@@ -118,7 +117,6 @@ const BarberosAdmin = () => {
           }}
             validationSchema={barberSchema}
             onSubmit={async (values, { resetForm }) => {
-              console.log(values)
               try {
                 const res = await fetch("http://localhost:3002/usuarios/", {
                   method: "POST",
