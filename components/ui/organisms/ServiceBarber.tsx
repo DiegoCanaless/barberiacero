@@ -17,7 +17,7 @@ const ServiceBarber = () => {
   useEffect(() => {
     const traerServicios = async () => {
       try {
-        const res = await fetch("http://localhost:3002/servicios/activos", {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/servicios/activos`, {
           credentials: "include"
         })
 
@@ -35,7 +35,7 @@ const ServiceBarber = () => {
 
     const traerMisServicios = async () => {
       try {
-        const res = await fetch("http://localhost:3002/servicios/mios", {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/servicios/mios`, {
           credentials: "include"
         })
 
@@ -68,7 +68,7 @@ const ServiceBarber = () => {
 
   const guardarServicios = async () => {
     try {
-      await fetch("http://localhost:3002/servicios/agregarServicio", {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/servicios/agregarServicio`, {
         method: "POST",
         credentials: "include",
         headers: {

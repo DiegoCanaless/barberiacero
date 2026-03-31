@@ -2,7 +2,6 @@ import Hero from "@/components/sections/Hero";
 import Gallery from "@/components/sections/Gallery";
 import Service from "@/components/sections/Service";
 import History from "@/components/sections/History";
-import Reviews from "@/components/sections/Reviews";
 import Location from "@/components/sections/Location";
 
 export default function HomePage() {
@@ -12,7 +11,6 @@ export default function HomePage() {
       <Service/>
       <Gallery/>
       <History/>
-      <Reviews/>
       <Location/>
     </main>
   );

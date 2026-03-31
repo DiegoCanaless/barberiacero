@@ -23,7 +23,7 @@ const ServicioAdmin = () => {
   useEffect(() => {
     const traerServicios = async () => {
       try {
-        const res = await fetch("http://localhost:3002/servicios/", {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/servicios/`, {
           credentials: "include",
         })
 
@@ -50,7 +50,7 @@ const ServicioAdmin = () => {
 
   const handleState = async (servicio: ServicioResponseDTO) => {
     try {
-      const res = await fetch(`http://localhost:3002/servicios/actualizarEstado/${servicio.id_servicio}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/servicios/actualizarEstado/${servicio.id_servicio}`, {
         method: "PUT",
         credentials: "include"
       })
@@ -108,7 +108,7 @@ const ServicioAdmin = () => {
             validationSchema={serviceSchema}
             onSubmit={async (values, { resetForm }) => {
               try {
-                const res = await fetch("http://localhost:3002/servicios/", {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/servicios/`, {
                   method: "POST",
                   credentials: "include",
                   headers: {

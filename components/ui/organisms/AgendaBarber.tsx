@@ -29,7 +29,7 @@ const AgendaBarber = () => {
 
                 if (seleccion === "Historial") {
                     const res = await fetch(
-                        `http://localhost:3002/turnos/barbero?estado=historial&page=${page}&limit=10`,
+                        `${process.env.NEXT_PUBLIC_API_URL}/turnos/barbero?estado=historial&page=${page}&limit=10`,
                         { credentials: "include" }
                     );
 
@@ -39,7 +39,7 @@ const AgendaBarber = () => {
 
                 } else {
                     const res = await fetch(
-                        `http://localhost:3002/turnos/barbero?estado=activo`,
+                        `${process.env.NEXT_PUBLIC_API_URL}/turnos/barbero?estado=activo`,
                         { credentials: "include" }
                     );
 

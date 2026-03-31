@@ -45,7 +45,7 @@ const HorarioBarber = () => {
                 }));
 
 
-            await fetch("http://localhost:3002/horarios", {
+            await fetch(`${process.env.NEXT_PUBLIC_API_URL}/horarios`, {
                 method: "POST",
                 credentials: "include",
                 headers: {
@@ -71,7 +71,7 @@ const HorarioBarber = () => {
     useEffect(() => {
         const traerHorarios = async () => {
             try {
-                const res = await fetch("http://localhost:3002/horarios/mios", {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/horarios/mios`, {
                     credentials: "include"
                 })
 

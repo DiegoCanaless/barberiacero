@@ -27,7 +27,7 @@ const ClientesAdmin = () => {
     useEffect(() => {
         const traerUsuarios = async () => {
             try {
-                const res = await fetch(`http://localhost:3002/usuarios?page=${page}&search=${busqueda}`, {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/usuarios?page=${page}&search=${busqueda}`, {
                     credentials: "include"
                 })
 
@@ -60,7 +60,7 @@ const ClientesAdmin = () => {
                 : State.ACTIVO
 
 
-            const res = await fetch(`http://localhost:3002/auth/${usuario.id_cliente}`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/${usuario.id_usuario}`, {
                 method: "PUT",
                 credentials: "include",
                 headers: {
@@ -76,7 +76,7 @@ const ClientesAdmin = () => {
 
             setUser((prev) =>
                 prev.map((u) =>
-                    u.id_cliente === usuario.id_cliente
+                    u.id_usuario === usuario.id_usuario
                         ? {
                             ...u, estado:
                                 u.estado === State.ACTIVO
@@ -126,7 +126,7 @@ const ClientesAdmin = () => {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {user.map((usuario) => (
-                        <div key={usuario.id_cliente} className={`flex flex-col justify-between bg-card border rounded-xl p-5 shadow-sm transition hover:shadow-md
+                        <div key={usuario.id_usuario} className={`flex flex-col justify-between bg-card border rounded-xl p-5 shadow-sm transition hover:shadow-md
                             ${usuario.estado === State.DESACTIVADO ? "opacity-60 grayscale" : ""}`}>
 
                             <div className="flex items-center gap-4">

@@ -28,7 +28,7 @@ const Location = () => {
                     ))}
                 </div>
             </div>
-            <div className=" w-full mt-6 md:mt-0 md:w-2/5 h-[320px] md:h-[480px] rounded-xl overflow-hidden border border-border shadow-sm ">
+            <div className=" w-full mt-6 md:mt-0 md:w-2/5 h-80 md:h-120 rounded-xl overflow-hidden border border-border shadow-sm ">
                 <iframe
                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d696.5859672210792!2d-68.85918140336068!3d-32.92868756789142!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x967e0a2b320a9833%3A0xad6b302a919312b0!2sDr.%20Salvador%20Civit%20557%2C%20M5504CNC%20Godoy%20Cruz%2C%20Mendoza!5e1!3m2!1ses!2sar!4v1769142940222!5m2!1ses!2sar"
                     className="w-full h-full border-0"

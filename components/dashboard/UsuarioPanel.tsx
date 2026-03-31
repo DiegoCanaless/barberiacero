@@ -34,7 +34,7 @@ export default function UsuarioPanel({ user }: UsuarioPanelProps) {
     useEffect(() => {
         const traerTurnos = async () => {
             try {
-                const res = await fetch(`http://localhost:3002/turnos/usuario`, {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/turnos/usuario`, {
                     credentials: "include"
                 });
 
@@ -59,7 +59,7 @@ export default function UsuarioPanel({ user }: UsuarioPanelProps) {
 
     const handleLogout = async () => {
         try {
-            await fetch("http://localhost:3002/auth/logout", {
+            await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
                 method: "POST",
                 credentials: "include"
             })
@@ -75,7 +75,7 @@ export default function UsuarioPanel({ user }: UsuarioPanelProps) {
     const handleCancelar = async () => {
         try {
             if (reserva) {
-                const res = await fetch(`http://localhost:3002/turnos/cancelar/${reserva.id_turno}`, {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/turnos/cancelar/${reserva.id_turno}`, {
                     method: "PUT",
                     credentials: "include"
                 });

@@ -43,7 +43,7 @@ const LoginModal = ({ onClose, onToast, openRegister }: LoginModalProps) => {
             validationSchema={loginSchema}
             onSubmit={async (values: LoginDTO) => {
               try {
-                const res = await fetch("http://localhost:3002/auth/login", {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
                   method: "POST",
                   credentials: "include",
                   headers: {
@@ -65,13 +65,15 @@ const LoginModal = ({ onClose, onToast, openRegister }: LoginModalProps) => {
                 const data: AuthResponseDTO = await res.json();
 
                 onToast("Logeado con exito", ToastState.SUCCESS);
-                dispatch(loginSuccess(data.user))
 
-
-                router.replace("/dashboard");
-
+                dispatch(loginSuccess(data.user));
 
                 onClose();
+
+                router.push("/dashboard");
+                router.refresh();
+
+
               } catch (error: unknown) {
 
                 if (error instanceof Error) {

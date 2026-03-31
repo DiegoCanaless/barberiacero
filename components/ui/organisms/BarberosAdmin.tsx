@@ -24,7 +24,7 @@ const BarberosAdmin = () => {
   useEffect(() => {
     const traerBarberos = async () => {
       try {
-        const res = await fetch("http://localhost:3002/barberos/", {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/barberos/`, {
           credentials: "include",
         })
 
@@ -52,7 +52,7 @@ const BarberosAdmin = () => {
         ? State.DESACTIVADO
         : State.ACTIVO
 
-      const res = await fetch(`http://localhost:3002/auth/${barbero.id_cliente}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/${barbero.id_usuario}`, {
         method: "PUT",
         credentials: "include",
         headers: {
@@ -68,7 +68,7 @@ const BarberosAdmin = () => {
 
       setBarberos((prev) =>
         prev.map((b) =>
-          b.id_cliente === barbero.id_cliente
+          b.id_usuario === barbero.id_usuario
             ? {
               ...b, estado:
                 b.estado === State.ACTIVO
@@ -118,7 +118,7 @@ const BarberosAdmin = () => {
             validationSchema={barberSchema}
             onSubmit={async (values, { resetForm }) => {
               try {
-                const res = await fetch("http://localhost:3002/usuarios/", {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/usuarios/`, {
                   method: "POST",
                   credentials: "include",
                   headers: {
@@ -204,7 +204,7 @@ const BarberosAdmin = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
 
             {barberos.map((barber) => (
-              <div key={barber.id_cliente} className={`flex flex-col justify-between bg-card border rounded-xl p-5 shadow-sm transition hover:shadow-md
+              <div key={barber.id_usuario} className={`flex flex-col justify-between bg-card border rounded-xl p-5 shadow-sm transition hover:shadow-md
                 ${barber.estado === State.DESACTIVADO ? "opacity-60 grayscale" : ""}`}>
 
                 <div className="flex items-center gap-4">

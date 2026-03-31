@@ -49,7 +49,7 @@ const RegisterModal = ({ onClose, onToast, openLogin }: RegisterModalProps) => {
 
                                 const { repeatPassword, ...data }: { repeatPassword: string } & UserDTO = values
 
-                                const res = await fetch("http://localhost:3002/auth/register", {
+                                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
                                     method: "POST",
                                     credentials: "include",
                                     headers: {
@@ -68,17 +68,11 @@ const RegisterModal = ({ onClose, onToast, openLogin }: RegisterModalProps) => {
                                     return;
                                 }
 
-                                const info = await res.json();
-
-                                onToast("Registrado con exito", ToastState.SUCCESS);
-                                dispatch(loginSuccess(info.user))
-
-
-
-                                router.replace("/dashboard");
-
+                                onToast("Registrado con éxito", ToastState.SUCCESS);
 
                                 onClose();
+                                openLogin();
+
 
                             } catch (error: unknown) {
 

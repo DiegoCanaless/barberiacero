@@ -2,7 +2,7 @@ import { State } from "@/types/enum/estado";
 
 
 export interface UserResponseDTO{
-    id_cliente: string;
+    id_usuario: string;
     name: string;
     apellido: string;
     email: string;

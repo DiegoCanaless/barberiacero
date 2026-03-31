@@ -59,7 +59,7 @@ const Navbar = () => {
 
     const Logout = async () => {
         try {
-            await fetch("http://localhost:3002/auth/logout", {
+            await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
                 method: "POST",
                 credentials: "include",
             });

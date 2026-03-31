@@ -22,7 +22,7 @@ const GestionAdmin = () => {
   useEffect(() => {
     const traerTurnos = async () => {
       try {
-        const res = await fetch("http://localhost:3002/turnos/activos", {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/turnos/activos`, {
           credentials: "include",
         });
         const data: TurnoResponseDTO[] = await res.json();
@@ -35,7 +35,7 @@ const GestionAdmin = () => {
 
     const traerHistorial = async () => {
       try {
-        const res = await fetch(`http://localhost:3002/turnos/historial?page=${page}&limit=15`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/turnos/historial?page=${page}&limit=15`, {
           credentials: "include"
         })
 

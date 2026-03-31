@@ -46,12 +46,32 @@ export function DatePickerDemo({ value, onChange, allowedDays }: DatePickerProps
                         onChange(date)
                         setOpen(false)
                     }}
-                    disabled={(date) =>
-                        allowedDays
-                            ? !allowedDays.includes(date.getDay())
-                            : false
-                    }
+                    disabled={(date) => {
+                        const hoy = new Date()
+                        hoy.setHours(0, 0, 0, 0)
+                        if (date < hoy) return true
+                        if (!allowedDays || allowedDays.length === 0) return true
+                        return !allowedDays.includes(date.getDay())
+                    }}
+                    modifiers={{
+                        noDisponible: (date) => {
+                            const hoy = new Date()
+                            hoy.setHours(0, 0, 0, 0)
+                            if (date < hoy) return false
+                            if (!allowedDays || allowedDays.length === 0) return false
+                            return !allowedDays.includes(date.getDay())
+                        }
+                    }}
+                    modifiersStyles={{
+                        noDisponible: {
+                            textDecoration: "line-through",
+                            opacity: 0.3,
+                            color: "var(--muted-foreground)"
+                        }
+                    }}
                 />
+
+
 
 
             </PopoverContent>
