@@ -4,7 +4,7 @@ import { useState } from "react";
 import ReservationButton from "../ui/ReservationButton"
 import { domine } from "../ui/typography/fonts"
 import { FaAngleRight } from "react-icons/fa6";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "@/lib/redux/store";
 import LoginModal from "../auth/LoginModal";
 import TurnoModal from "../ui/molecules/TurnoModal";
@@ -18,7 +18,6 @@ const Hero = () => {
 
     const [modalTurno, setModalTurno] = useState<boolean>(false)
 
-    const dispatch = useDispatch()
 
 
     const { user, isAuthenticated } = useSelector(
