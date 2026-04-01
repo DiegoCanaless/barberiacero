@@ -66,6 +66,7 @@ const Navbar = () => {
 
             dispatch(logout());
             router.push("/");
+            router.refresh();
         } catch (error) {
             console.error("Error al cerrar sesion ", error);
         }

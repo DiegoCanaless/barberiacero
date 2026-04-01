@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link";
 import { loginSuccess } from "@/lib/redux/slices/authSlice";
 import { loginSchema } from "@/validations/loginSchema";
 import { ErrorMessage, Field, Form, Formik } from "formik";
@@ -20,9 +21,7 @@ interface LoginModalProps {
 const LoginModal = ({ onClose, onToast, openRegister }: LoginModalProps) => {
 
   const dispatch = useDispatch<AppDispatch>();
-
   const router = useRouter()
-
 
   return (
     <>
@@ -32,7 +31,7 @@ const LoginModal = ({ onClose, onToast, openRegister }: LoginModalProps) => {
           <button onClick={onClose} className="absolute top-5 right-5 cursor-pointer text-gray-400 hover:text-gray-600" >
             <FaX size={18} />
           </button>
-          <h4 className="text-2xl font-bold  text-center">ACCESO</h4>
+          <h4 className="text-2xl font-bold text-center">ACCESO</h4>
           <p className="mt-2 text-sm mb-6 text-center">Ingresa para gestionar tus turnos</p>
 
           <Formik
@@ -43,6 +42,9 @@ const LoginModal = ({ onClose, onToast, openRegister }: LoginModalProps) => {
             validationSchema={loginSchema}
             onSubmit={async (values: LoginDTO) => {
               try {
+
+                console.log("API URL:", process.env.NEXT_PUBLIC_API_URL);
+                
                 const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
                   method: "POST",
                   credentials: "include",
@@ -52,67 +54,91 @@ const LoginModal = ({ onClose, onToast, openRegister }: LoginModalProps) => {
                   body: JSON.stringify(values)
                 })
 
+                console.log("Response status:", res.status);
+                console.log("Response headers:", Array.from(res.headers.entries()));
+
                 if (res.status === 401) {
-                  onToast("Error al ingresar los datos", ToastState.ERROR);
+                  onToast("Credenciales inválidas", ToastState.ERROR);
                   return
                 }
 
                 if (!res.ok) {
-                  onToast("Surgio un error al logearse", ToastState.ERROR);
+                  const errorData = await res.json();
+                  onToast(errorData.message || "Error al logearse", ToastState.ERROR);
                   return;
                 }
 
                 const data: AuthResponseDTO = await res.json();
 
-                onToast("Logeado con exito", ToastState.SUCCESS);
+                console.log("User data:", data.user);
+                console.log("Cookies guardadas:", document.cookie);
 
                 dispatch(loginSuccess(data.user));
 
+                onToast("Logeado con exito", ToastState.SUCCESS);
                 onClose();
+
+
+                await new Promise(resolve => setTimeout(resolve, 300));
 
                 router.push("/dashboard");
                 router.refresh();
 
-
               } catch (error: unknown) {
-
+                console.error("Error en login:", error);
                 if (error instanceof Error) {
                   onToast(error.message, ToastState.ERROR)
                 } else {
                   onToast("Ocurrió un error inesperado", ToastState.ERROR)
                 }
-
               }
-
             }}
           >
-            {({ values }) => (
+            {({ isSubmitting }) => (
               <Form className="flex flex-col px-2 gap-2 max-w-md text-xs">
                 <div className="flex flex-col gap-1">
                   <label className="text-base flex items-center gap-2"><FaEnvelope /> Email</label>
-                  <Field className=" w-full px-3 py-2  rounded-md  border border-gray-300  bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-neutral-500 transition duration-200 " name="email" type="email" placeholder="correo.gmail.com" />
+                  <Field 
+                    className="w-full px-3 py-2 rounded-md border border-gray-300 bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-neutral-500 transition duration-200" 
+                    name="email" 
+                    type="email" 
+                    placeholder="correo@gmail.com"
+                    disabled={isSubmitting}
+                  />
                   <ErrorMessage name="email" component="p" className="text-red-500 text-xs" />
                 </div>
 
                 <div className="flex flex-col gap-1">
                   <label className="text-base flex items-center gap-2"><FaLock /> Contraseña</label>
-                  <Field className=" w-full px-3 py-2  rounded-md  border border-gray-300  bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-neutral-500 transition duration-200 " name="password" type="password" placeholder="*****" />
+                  <Field 
+                    className="w-full px-3 py-2 rounded-md border border-gray-300 bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-neutral-500 transition duration-200" 
+                    name="password" 
+                    type="password" 
+                    placeholder="*****"
+                    disabled={isSubmitting}
+                  />
                   <ErrorMessage name="password" component="p" className="text-red-500 text-xs" />
                 </div>
 
-                <button type="submit" className="bg-foreground text-background mt-4 w-full cursor-pointer py-2 px-4 text-sm font-semibold rounded-xs">INGRESAR</button>
+                <button 
+                  type="submit" 
+                  disabled={isSubmitting}
+                  className="bg-foreground text-background mt-4 w-full cursor-pointer py-2 px-4 text-sm font-semibold rounded-xs disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isSubmitting ? "Ingresando..." : "INGRESAR"}
+                </button>
               </Form>
-
-
             )}
-
-
           </Formik>
-          <button className="flex justify-center mt-6 cursor-pointer w-full text-sm hover:text-white"
+
+          <button 
+            className="flex justify-center mt-6 cursor-pointer w-full text-sm hover:text-white"
             onClick={() => {
               openRegister();
             }}
-          >¿Aun no tienes cuenta?</button>
+          >
+            ¿Aun no tienes cuenta?
+          </button>
 
         </div>
       </div>

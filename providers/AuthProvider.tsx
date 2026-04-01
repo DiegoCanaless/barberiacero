@@ -16,19 +16,26 @@ export default function AuthProvider({
 
         const checkAuth = async () => {
             try {
-
+                console.log("Verificando autenticación...");
+                
                 const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
-                    credentials: "include"
+                    credentials: "include" // 👈 IMPORTANTE
                 })
 
-                if (!res.ok) return
+                console.log("Auth check response:", res.status);
+
+                if (!res.ok) {
+                    console.log("Usuario no autenticado");
+                    return
+                }
 
                 const user = await res.json()
 
+                console.log("Usuario autenticado:", user);
                 dispatch(loginSuccess(user))
 
             } catch (error) {
-                console.error(error)
+                console.error("Error verificando autenticación:", error)
             }
         }
 
