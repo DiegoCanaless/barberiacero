@@ -3,9 +3,19 @@ import { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
 
 export async function middleware(request: NextRequest) {
-    const token = request.cookies.get("token")?.value;
+    // 👇 Intenta obtener token de la cookie
+    let token = request.cookies.get("token")?.value;
+
+    // 👇 Si no hay cookie, intenta obtener del header Authorization
+    if (!token) {
+        const authHeader = request.headers.get("authorization");
+        if (authHeader?.startsWith("Bearer ")) {
+            token = authHeader.substring(7);
+        }
+    }
 
     if (!token) {
+        console.log("⚠️ No hay token");
         return NextResponse.redirect(new URL("/", request.url));
     }
 
@@ -15,8 +25,10 @@ export async function middleware(request: NextRequest) {
             new TextEncoder().encode(process.env.JWT_SECRET!)
         );
 
+        console.log("✅ Token válido");
         return NextResponse.next();
-    } catch {
+    } catch (error) {
+        console.log("❌ Token inválido:", error);
         return NextResponse.redirect(new URL("/", request.url));
     }
 }

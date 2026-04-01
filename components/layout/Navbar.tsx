@@ -59,6 +59,8 @@ const Navbar = () => {
 
     const Logout = async () => {
         try {
+            localStorage.removeItem("authToken");
+
             await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
                 method: "POST",
                 credentials: "include",
@@ -172,7 +174,7 @@ const Navbar = () => {
 
 
             {modalTurno && (
-                <TurnoModal onClose={() => setModalTurno(false)} onToast={(text, state) => setToast({ text, state })}   />
+                <TurnoModal onClose={() => setModalTurno(false)} onToast={(text, state) => setToast({ text, state })} />
             )}
 
             {openNav && (

@@ -1,6 +1,5 @@
 "use client"
 
-import Link from "next/link";
 import { loginSuccess } from "@/lib/redux/slices/authSlice";
 import { loginSchema } from "@/validations/loginSchema";
 import { ErrorMessage, Field, Form, Formik } from "formik";
@@ -42,9 +41,6 @@ const LoginModal = ({ onClose, onToast, openRegister }: LoginModalProps) => {
             validationSchema={loginSchema}
             onSubmit={async (values: LoginDTO) => {
               try {
-
-                console.log("API URL:", process.env.NEXT_PUBLIC_API_URL);
-                
                 const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
                   method: "POST",
                   credentials: "include",
@@ -54,31 +50,31 @@ const LoginModal = ({ onClose, onToast, openRegister }: LoginModalProps) => {
                   body: JSON.stringify(values)
                 })
 
-                console.log("Response status:", res.status);
-                console.log("Response headers:", Array.from(res.headers.entries()));
-
                 if (res.status === 401) {
                   onToast("Credenciales inválidas", ToastState.ERROR);
                   return
                 }
 
                 if (!res.ok) {
-                  const errorData = await res.json();
-                  onToast(errorData.message || "Error al logearse", ToastState.ERROR);
+                  onToast("Error al logearse", ToastState.ERROR);
                   return;
                 }
 
                 const data: AuthResponseDTO = await res.json();
 
-                console.log("User data:", data.user);
-                console.log("Cookies guardadas:", document.cookie);
+                // 👇 GUARDAR TOKEN EN LOCALSTORAGE
+                if (data.token) {
+                  localStorage.setItem("authToken", data.token);
+                  console.log("Token guardado en localStorage");
+                }
 
+                // 👇 Actualizar Redux con los datos del usuario
                 dispatch(loginSuccess(data.user));
 
                 onToast("Logeado con exito", ToastState.SUCCESS);
                 onClose();
 
-
+                // Pequeña pausa para asegurar que todo se guardó
                 await new Promise(resolve => setTimeout(resolve, 300));
 
                 router.push("/dashboard");
@@ -116,6 +112,7 @@ const LoginModal = ({ onClose, onToast, openRegister }: LoginModalProps) => {
                     type="password" 
                     placeholder="*****"
                     disabled={isSubmitting}
+                    autoComplete="current-password"
                   />
                   <ErrorMessage name="password" component="p" className="text-red-500 text-xs" />
                 </div>
