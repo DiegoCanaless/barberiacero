@@ -58,21 +58,23 @@ const Navbar = () => {
     const logoSrc = isDark ? "/Logo.png" : "/Logo2.png";
 
     const Logout = async () => {
-        try {
-            localStorage.removeItem("authToken");
+    try {
+        localStorage.removeItem("authToken");
 
-            await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
-                method: "POST",
-                credentials: "include",
-            });
+        document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
 
-            dispatch(logout());
-            router.push("/");
-            router.refresh();
-        } catch (error) {
-            console.error("Error al cerrar sesion ", error);
-        }
-    };
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
+            method: "POST",
+            credentials: "include",
+        });
+
+        dispatch(logout());
+        router.push("/");
+        router.refresh();
+    } catch (error) {
+        console.error("Error al cerrar sesion ", error);
+    }
+};
 
     const handleReservarClick = () => {
         if (!isAuthenticated) {

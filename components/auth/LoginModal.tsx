@@ -62,10 +62,15 @@ const LoginModal = ({ onClose, onToast, openRegister }: LoginModalProps) => {
 
                 const data: AuthResponseDTO = await res.json();
 
-                // 👇 GUARDAR TOKEN EN LOCALSTORAGE
+                // 👇 GUARDAR TOKEN EN LOCALSTORAGE Y COOKIE
                 if (data.token) {
                   localStorage.setItem("authToken", data.token);
-                  console.log("Token guardado en localStorage");
+                  
+                  // 👇 TAMBIÉN guardar en cookie para que el servidor lo pueda leer
+                  document.cookie = `token=${data.token}; path=/; max-age=${1000 * 60 * 60 * 24}; SameSite=Strict`;
+                  
+                  console.log("Token guardado en localStorage y cookie");
+                  console.log("Cookies después de guardar:", document.cookie);
                 }
 
                 // 👇 Actualizar Redux con los datos del usuario
@@ -74,9 +79,10 @@ const LoginModal = ({ onClose, onToast, openRegister }: LoginModalProps) => {
                 onToast("Logeado con exito", ToastState.SUCCESS);
                 onClose();
 
-                // Pequeña pausa para asegurar que todo se guardó
-                await new Promise(resolve => setTimeout(resolve, 300));
+                // 👇 Pequeña pausa
+                await new Promise(resolve => setTimeout(resolve, 500));
 
+                console.log("Redirigiendo a /dashboard");
                 router.push("/dashboard");
                 router.refresh();
 
