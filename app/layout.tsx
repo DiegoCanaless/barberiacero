@@ -11,7 +11,7 @@ export default function RootLayout({
     children: React.ReactNode;
 }) {
 
-    console.log("Funcionando en " ,process.env.NEXT_PUBLIC_API_URL)
+  
 
 
     return (

@@ -188,8 +188,7 @@ const TurnoModal = ({ onClose, onToast }: TurnoModal) => {
 
                                         const data = await res.json()
 
-                                        console.log("diasBarbero:", diasBarbero)
-                                        console.log("diasPermitidos:", diasPermitidos)
+  
                                         // ✅ Garantiza siempre un array aunque el backend devuelva error
                                         sethorariosDisponibles(Array.isArray(data) ? data : [])
 

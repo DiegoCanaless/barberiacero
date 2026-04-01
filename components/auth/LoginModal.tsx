@@ -69,8 +69,6 @@ const LoginModal = ({ onClose, onToast, openRegister }: LoginModalProps) => {
                   // 👇 TAMBIÉN guardar en cookie para que el servidor lo pueda leer
                   document.cookie = `token=${data.token}; path=/; max-age=${1000 * 60 * 60 * 24}; SameSite=Strict`;
                   
-                  console.log("Token guardado en localStorage y cookie");
-                  console.log("Cookies después de guardar:", document.cookie);
                 }
 
                 // 👇 Actualizar Redux con los datos del usuario
@@ -82,7 +80,7 @@ const LoginModal = ({ onClose, onToast, openRegister }: LoginModalProps) => {
                 // 👇 Pequeña pausa
                 await new Promise(resolve => setTimeout(resolve, 500));
 
-                console.log("Redirigiendo a /dashboard");
+
                 router.push("/dashboard");
                 router.refresh();
 

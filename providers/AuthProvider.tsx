@@ -34,7 +34,6 @@ export default function AuthProvider({
                     return
                 }
 
-                console.log("Token encontrado en localStorage, verificando con backend...");
 
                 // Hacer una request con el token en el header
                 const meRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {

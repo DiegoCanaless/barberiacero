@@ -15,7 +15,6 @@ export async function middleware(request: NextRequest) {
     }
 
     if (!token) {
-        console.log("⚠️ No hay token");
         return NextResponse.redirect(new URL("/", request.url));
     }
 
@@ -25,10 +24,8 @@ export async function middleware(request: NextRequest) {
             new TextEncoder().encode(process.env.JWT_SECRET!)
         );
 
-        console.log("✅ Token válido");
         return NextResponse.next();
     } catch (error) {
-        console.log("❌ Token inválido:", error);
         return NextResponse.redirect(new URL("/", request.url));
     }
 }
