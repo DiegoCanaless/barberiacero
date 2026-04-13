@@ -17,10 +17,9 @@ export const registerSchema = Yup.object({
         .required("El email es obligatorio"),
 
     telefono: Yup.string()
-        .matches(/^[0-9]+$/, "El teléfono solo puede contener números")
-        .min(8, "El teléfono es demasiado corto")
-        .max(15, "El teléfono es demasiado largo")
+        .matches(/^\+?[1-9]\d{7,14}$/, "Teléfono inválido")
         .required("El teléfono es obligatorio"),
+
 
 
     password: Yup.string()

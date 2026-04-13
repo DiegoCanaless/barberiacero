@@ -4,9 +4,12 @@ import { useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import { registerSchema } from "@/validations/registerSchema";
-import { loginSuccess } from "@/lib/redux/slices/authSlice";
 import { AppDispatch } from "@/lib/redux/store";
 import { UserDTO } from "@/types/entities/user/UserDTO";
+
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
+
 
 interface RegisterModalProps {
     onClose: () => void;
@@ -64,9 +67,11 @@ const RegisterModal = ({ onClose, onToast, openLogin }: RegisterModalProps) => {
                                 }
 
                                 if (!res.ok) {
-                                    onToast("Surgio un error al registrarse", ToastState.ERROR);
+                                    const data = await res.json();
+                                    onToast(data.message || "Error al registrarse", ToastState.ERROR);
                                     return;
                                 }
+
 
                                 onToast("Registrado con éxito", ToastState.SUCCESS);
 
@@ -86,7 +91,7 @@ const RegisterModal = ({ onClose, onToast, openLogin }: RegisterModalProps) => {
 
                         }}
                     >
-                        {({ values }) => (
+                        {({ values, setFieldValue }) => (
                             <Form className="flex flex-col px-2 gap-2 max-w-md text-xs">
 
                                 <div className="flex flex-col gap-1">
@@ -109,7 +114,14 @@ const RegisterModal = ({ onClose, onToast, openLogin }: RegisterModalProps) => {
 
                                 <div className="flex flex-col gap-1">
                                     <label className="text-base flex items-center gap-2"><FaPhone /> Telefono</label>
-                                    <Field className=" w-full px-3 py-2  rounded-md  border border-gray-300  bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-neutral-500 transition duration-200 " name="telefono" type="tel" placeholder="*****" />
+                                    <PhoneInput
+                                        country={"ar"}
+                                        value={values.telefono}
+                                        onChange={(value) => setFieldValue("telefono", `+${value}`)}
+                                        inputClass="!w-full !bg-background !text-foreground"
+                                        containerClass="w-full"
+                                    />
+
                                     <ErrorMessage name="telefono" component="p" className="text-red-500 text-xs" />
                                 </div>
 

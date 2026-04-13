@@ -1,9 +1,11 @@
+
 import { RootState } from "@/lib/redux/store";
 import { TurnoResponseDTO } from "@/types/entities/turno/TurnoResponseDTO";
 import { useEffect, useState } from "react"
 import { useSelector } from "react-redux"
 import TablaDatos from "./TablaDatos";
 import { RoleUser } from "@/types/enum/roleUser";
+import Toast, { ToastState } from "../feedback/Toast";
 
 
 const AgendaBarber = () => {
@@ -18,6 +20,11 @@ const AgendaBarber = () => {
         limit: 15,
         totalPages: 1
     })
+
+    const [toast, setToast] = useState<{
+        text: string;
+        state: ToastState;
+    } | null>(null);
 
     const { user, isAuthenticated } = useSelector(
         (state: RootState) => state.auth
@@ -56,6 +63,37 @@ const AgendaBarber = () => {
 
     }, [seleccion, page]);
 
+    const handleFinalizar = async (id: number) => {
+        try {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/turnos/finalizar/${id}`, {
+                method: "PUT",
+                credentials: "include",
+            })
+
+            if (!res.ok) {
+                console.error("Error al finalizar el turno");
+                return
+            }
+
+            setTurnos((prev) =>
+                prev.map((t) =>
+                    t.id_turno === id ? { ...t, estado: "Finalizado" } : t
+                )
+            );
+
+            setToast({
+                text: "Turno Finalizado",
+                state: ToastState.SUCCESS
+            });
+        } catch (error) {
+            console.error(error)
+            setToast({
+                text: "Error al finalizar el turno",
+                state: ToastState.ERROR
+            });
+        }
+    }
+
     return (
         <>
             <div className="mt-10 mb-10 w-full max-w-6xl mx-auto px-4">
@@ -74,8 +112,8 @@ const AgendaBarber = () => {
                 </div>
 
                 {seleccion === "Proximos" ? (
-                    <TablaDatos data={turnos} role={RoleUser.BARBER} />
-                    
+                    <TablaDatos data={turnos} role={RoleUser.BARBER} onFinalizar={handleFinalizar} />
+
                 ) : <>
                     <TablaDatos data={historial} role={RoleUser.BARBER} />
                     <div className="flex justify-center items-center gap-4 mt-6">
@@ -89,6 +127,14 @@ const AgendaBarber = () => {
 
 
             </div>
+            {toast && (
+                <Toast
+                    text={toast.text}
+                    state={toast.state}
+                    onClose={() => setToast(null)}
+                />
+            )}
+
         </>
     )
 }

@@ -1,12 +1,9 @@
-import { NextResponse } from "next/server";
-import { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function middleware(request: NextRequest) {
-    // 👇 Intenta obtener token de la cookie
     let token = request.cookies.get("token")?.value;
 
-    // 👇 Si no hay cookie, intenta obtener del header Authorization
     if (!token) {
         const authHeader = request.headers.get("authorization");
         if (authHeader?.startsWith("Bearer ")) {
@@ -14,22 +11,35 @@ export async function middleware(request: NextRequest) {
         }
     }
 
+    // 🟡 SI NO HAY TOKEN
     if (!token) {
-        return NextResponse.redirect(new URL("/", request.url));
+        // Solo bloquea dashboard
+        if (request.nextUrl.pathname.startsWith("/dashboard")) {
+            return NextResponse.redirect(new URL("/", request.url));
+        }
+
+        return NextResponse.next();
     }
 
     try {
-        await jwtVerify(
+        const { payload } = await jwtVerify(
             token,
             new TextEncoder().encode(process.env.JWT_SECRET!)
         );
 
+        const role = payload.role as string;
+
+        // 🔴 BLOQUEAR LANDING PARA ADMIN/BARBER
+        if (
+            (role === "admin" || role === "barber") &&
+            request.nextUrl.pathname === "/"
+        ) {
+            return NextResponse.redirect(new URL("/dashboard", request.url));
+        }
+
         return NextResponse.next();
-    } catch (error) {
+
+    } catch {
         return NextResponse.redirect(new URL("/", request.url));
     }
 }
-
-export const config = {
-    matcher: ["/dashboard/:path*"],
-};

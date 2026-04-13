@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { AppDispatch } from "@/lib/redux/store";
 import { LoginDTO } from "@/types/entities/auth/LoginDTO";
 import { AuthResponseDTO } from "@/types/entities/auth/AuthResponseDTO";
+import { signIn } from "next-auth/react";
 
 interface LoginModalProps {
   onClose: () => void;
@@ -56,33 +57,27 @@ const LoginModal = ({ onClose, onToast, openRegister }: LoginModalProps) => {
                 }
 
                 if (!res.ok) {
-                  onToast("Error al logearse", ToastState.ERROR);
+                  const data = await res.json();
+                  onToast(data.message || "Error al logearse", ToastState.ERROR);
                   return;
                 }
 
+
                 const data: AuthResponseDTO = await res.json();
 
-                // 👇 GUARDAR TOKEN EN LOCALSTORAGE Y COOKIE
-                if (data.token) {
-                  localStorage.setItem("authToken", data.token);
-                  
-                  // 👇 TAMBIÉN guardar en cookie para que el servidor lo pueda leer
-                  document.cookie = `token=${data.token}; path=/; max-age=${1000 * 60 * 60 * 24}; SameSite=Strict`;
-                  
-                }
-
-                // 👇 Actualizar Redux con los datos del usuario
                 dispatch(loginSuccess(data.user));
 
                 onToast("Logeado con exito", ToastState.SUCCESS);
+
                 onClose();
 
-                // 👇 Pequeña pausa
                 await new Promise(resolve => setTimeout(resolve, 500));
 
-
-                router.push("/dashboard");
-                router.refresh();
+                if (data.user.profile_complete === 0) {
+                  router.push("/completarPerfil");
+                } else {
+                  router.push("/dashboard")
+                }
 
               } catch (error: unknown) {
                 console.error("Error en login:", error);
@@ -98,10 +93,10 @@ const LoginModal = ({ onClose, onToast, openRegister }: LoginModalProps) => {
               <Form className="flex flex-col px-2 gap-2 max-w-md text-xs">
                 <div className="flex flex-col gap-1">
                   <label className="text-base flex items-center gap-2"><FaEnvelope /> Email</label>
-                  <Field 
-                    className="w-full px-3 py-2 rounded-md border border-gray-300 bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-neutral-500 transition duration-200" 
-                    name="email" 
-                    type="email" 
+                  <Field
+                    className="w-full px-3 py-2 rounded-md border border-gray-300 bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-neutral-500 transition duration-200"
+                    name="email"
+                    type="email"
                     placeholder="correo@gmail.com"
                     disabled={isSubmitting}
                   />
@@ -110,10 +105,10 @@ const LoginModal = ({ onClose, onToast, openRegister }: LoginModalProps) => {
 
                 <div className="flex flex-col gap-1">
                   <label className="text-base flex items-center gap-2"><FaLock /> Contraseña</label>
-                  <Field 
-                    className="w-full px-3 py-2 rounded-md border border-gray-300 bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-neutral-500 transition duration-200" 
-                    name="password" 
-                    type="password" 
+                  <Field
+                    className="w-full px-3 py-2 rounded-md border border-gray-300 bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-neutral-500 transition duration-200"
+                    name="password"
+                    type="password"
                     placeholder="*****"
                     disabled={isSubmitting}
                     autoComplete="current-password"
@@ -121,8 +116,8 @@ const LoginModal = ({ onClose, onToast, openRegister }: LoginModalProps) => {
                   <ErrorMessage name="password" component="p" className="text-red-500 text-xs" />
                 </div>
 
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   disabled={isSubmitting}
                   className="bg-foreground text-background mt-4 w-full cursor-pointer py-2 px-4 text-sm font-semibold rounded-xs disabled:opacity-50 disabled:cursor-not-allowed"
                 >
@@ -132,14 +127,21 @@ const LoginModal = ({ onClose, onToast, openRegister }: LoginModalProps) => {
             )}
           </Formik>
 
-          <button 
-            className="flex justify-center mt-6 cursor-pointer w-full text-sm hover:text-white"
+          <button className="flex justify-center mt-6 cursor-pointer w-full text-sm hover:text-white"
             onClick={() => {
               openRegister();
-            }}
-          >
+            }}>
             ¿Aun no tienes cuenta?
           </button>
+
+          <div className="flex justify-center items-center mt-4 ">
+            <button onClick={() => signIn("google", { callbackUrl: "/auth/callback"})} className="flex items-center justify-center cursor-pointer bg-white text-black border rounded-md shadow-sm px-4 py-2 text-sm font-medium hover:bg-gray-50">
+              <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google logo" className="w-5 h-5 mr-2" /> Iniciar sesión con Google
+            </button>
+          </div>
+
+
+
 
         </div>
       </div>

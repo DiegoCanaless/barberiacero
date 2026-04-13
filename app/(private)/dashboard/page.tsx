@@ -1,46 +1,38 @@
 import { cookies } from "next/headers";
-import { jwtVerify } from "jose";
+import { redirect } from "next/navigation";
+
 import SuperAdminPanel from "@/components/dashboard/SuperAdminPanel";
 import UsuarioPanel from "@/components/dashboard/UsuarioPanel";
 import BarberoPanel from "@/components/dashboard/BarberoPanel";
+
 import { UserResponseDTO } from "@/types/entities/user/UserResponseDTO";
-import { State } from "@/types/enum/estado";
 
 export default async function DashboardPage() {
 
     const token = (await cookies()).get("token")?.value;
+    
+    if (!token) {
+        redirect("/");
+    }
 
-    type JWTPayloadCustom = {
-    id: string;
-    name: string;
-    apellido: string;
-    email: string;
-    role: "usuario" | "admin" | "barber";
-    telefono: string;
-    estado: State;
-    created_at: string;
-};
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
+        headers: {
+            Cookie: `token=${token}`,
+        },
+        cache: "no-store",
+    });
 
+    if (!res.ok) {
+        redirect("/");
+    }
 
-    const { payload } = await jwtVerify<JWTPayloadCustom>(
-    token!,
-    new TextEncoder().encode(process.env.JWT_SECRET!)
-);
+    const user: UserResponseDTO = await res.json();
 
+    if (user.profile_complete === 0) {
+        redirect("/completarPerfil");
+    }
 
-    const user: UserResponseDTO = {
-    id_usuario: payload.id,
-    name: payload.name,
-    apellido: payload.apellido,
-    email: payload.email,
-    role: payload.role,
-    telefono: payload.telefono,
-    estado: payload.estado,
-    created_at: payload.created_at
-};
-
-
-
+    // 🔥 Render por rol
     if (user.role === "admin") return <SuperAdminPanel />;
     if (user.role === "barber") return <BarberoPanel />;
     if (user.role === "usuario") return <UsuarioPanel user={user} />;
