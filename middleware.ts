@@ -2,6 +2,17 @@ import { jwtVerify } from "jose";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function middleware(request: NextRequest) {
+    const { pathname } = request.nextUrl;
+
+    // ✅ IMPORTANTE: dejar pasar estáticos
+    if (
+        pathname.startsWith("/_next") ||
+        pathname.startsWith("/favicon.ico") ||
+        pathname.includes(".")
+    ) {
+        return NextResponse.next();
+    }
+
     let token = request.cookies.get("token")?.value;
 
     if (!token) {
@@ -11,13 +22,11 @@ export async function middleware(request: NextRequest) {
         }
     }
 
-    // 🟡 SI NO HAY TOKEN
+    // 🟡 SIN TOKEN
     if (!token) {
-        // Solo bloquea dashboard
-        if (request.nextUrl.pathname.startsWith("/dashboard")) {
+        if (pathname.startsWith("/dashboard")) {
             return NextResponse.redirect(new URL("/", request.url));
         }
-
         return NextResponse.next();
     }
 
@@ -29,10 +38,9 @@ export async function middleware(request: NextRequest) {
 
         const role = payload.role as string;
 
-        // 🔴 BLOQUEAR LANDING PARA ADMIN/BARBER
         if (
             (role === "admin" || role === "barber") &&
-            request.nextUrl.pathname === "/"
+            pathname === "/"
         ) {
             return NextResponse.redirect(new URL("/dashboard", request.url));
         }
