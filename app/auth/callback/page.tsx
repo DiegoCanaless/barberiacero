@@ -14,7 +14,7 @@ export default function AuthCallback() {
     useEffect(() => {
         if (status === "loading") return;
 
-        if (!session) {
+        if (!session?.backendToken) {
             router.push("/");
             return;
         }
@@ -22,7 +22,12 @@ export default function AuthCallback() {
         const handleAuth = async () => {
             try {
                 if (session.backendToken) {
-                    document.cookie = `token=${session.backendToken}; path=/`;
+                    // ✅ Guardar en cookie (para middleware)
+                    document.cookie = `token=${session.backendToken}; path=/; SameSite=Lax`;
+
+
+                    // 🔥 ESTO TE FALTABA
+                    localStorage.setItem("token", session.backendToken);
                 }
 
                 if (session.user) {
