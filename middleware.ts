@@ -4,15 +4,6 @@ import { NextRequest, NextResponse } from "next/server";
 export async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
-    // ✅ IMPORTANTE: dejar pasar estáticos
-    if (
-        pathname.startsWith("/_next") ||
-        pathname.startsWith("/favicon.ico") ||
-        pathname.includes(".")
-    ) {
-        return NextResponse.next();
-    }
-
     let token = request.cookies.get("token")?.value;
 
     if (!token) {
@@ -22,7 +13,6 @@ export async function middleware(request: NextRequest) {
         }
     }
 
-    // 🟡 SIN TOKEN
     if (!token) {
         if (pathname.startsWith("/dashboard")) {
             return NextResponse.redirect(new URL("/", request.url));
@@ -48,6 +38,10 @@ export async function middleware(request: NextRequest) {
         return NextResponse.next();
 
     } catch {
-        return NextResponse.redirect(new URL("/", request.url));
+        return NextResponse.next(); // 👈 clave
     }
 }
+
+export const config = {
+    matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+};
