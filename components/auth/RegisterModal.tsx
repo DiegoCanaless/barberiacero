@@ -119,6 +119,7 @@ const RegisterModal = ({ onClose, onToast, openLogin }: RegisterModalProps) => {
                                         onChange={(value) => setFieldValue("telefono", `+${value}`)}
                                         inputClass="!w-full !bg-background !text-foreground"
                                         containerClass="w-full"
+                                        enableLongNumbers={15}
                                     />
 
                                     <ErrorMessage name="telefono" component="p" className="text-red-500 text-xs" />
