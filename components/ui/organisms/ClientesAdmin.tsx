@@ -27,8 +27,12 @@ const ClientesAdmin = () => {
     useEffect(() => {
         const traerUsuarios = async () => {
             try {
+                const token = localStorage.getItem("token")
+
                 const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/usuarios?page=${page}&search=${busqueda}`, {
-                    credentials: "include"
+                    headers:{
+                        Authorization: `Bearer ${token}`
+                    }
                 })
 
                 const data = await res.json()
@@ -54,6 +58,7 @@ const ClientesAdmin = () => {
 
     const handleState = async (usuario: UserResponseDTO) => {
         try {
+            const token = localStorage.getItem("token")
 
             const nuevoEstado = usuario.estado === State.ACTIVO
                 ? State.DESACTIVADO
@@ -62,9 +67,9 @@ const ClientesAdmin = () => {
 
             const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/${usuario.id_usuario}`, {
                 method: "PUT",
-                credentials: "include",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
                 },
                 body: JSON.stringify({ estado: nuevoEstado })
             })

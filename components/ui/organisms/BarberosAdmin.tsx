@@ -24,8 +24,13 @@ const BarberosAdmin = () => {
   useEffect(() => {
     const traerBarberos = async () => {
       try {
+        const token = localStorage.getItem("token")
+
+
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/barberos/`, {
-          credentials: "include",
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         })
 
         if (!res.ok) {
@@ -48,15 +53,17 @@ const BarberosAdmin = () => {
   const handleState = async (barbero: UserResponseDTO) => {
     try {
 
+      const token = localStorage.getItem("token")
+
       const nuevoEstado = barbero.estado === State.ACTIVO
         ? State.DESACTIVADO
         : State.ACTIVO
 
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/${barbero.id_usuario}`, {
         method: "PUT",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({ estado: nuevoEstado })
       })
@@ -118,11 +125,13 @@ const BarberosAdmin = () => {
             validationSchema={barberSchema}
             onSubmit={async (values, { resetForm }) => {
               try {
+                const token = localStorage.getItem("token")
+
                 const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/usuarios/`, {
                   method: "POST",
-                  credentials: "include",
                   headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
                   },
                   body: JSON.stringify(values)
                 })

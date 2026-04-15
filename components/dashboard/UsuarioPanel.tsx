@@ -31,11 +31,17 @@ export default function UsuarioPanel({ user }: UsuarioPanelProps) {
     } | null>(null);
 
 
+
     useEffect(() => {
         const traerTurnos = async () => {
             try {
+
+                const token = localStorage.getItem("token")
+
                 const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/turnos/usuario`, {
-                    credentials: "include"
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
                 });
 
                 const data: TurnoResponseDTO[] = await res.json();
@@ -59,12 +65,18 @@ export default function UsuarioPanel({ user }: UsuarioPanelProps) {
 
     const handleLogout = async () => {
         try {
+            const token = localStorage.getItem("token")
+
             await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
                 method: "POST",
-                credentials: "include"
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
             })
 
             dispatch(logout())
+
+            localStorage.removeItem("token")
 
             router.push("/")
         } catch (error) {
@@ -75,9 +87,14 @@ export default function UsuarioPanel({ user }: UsuarioPanelProps) {
     const handleCancelar = async () => {
         try {
             if (reserva) {
+
+                const token = localStorage.getItem("token")
+
                 const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/turnos/cancelar/${reserva.id_turno}`, {
                     method: "PUT",
-                    credentials: "include"
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
                 });
 
                 if (!res.ok) {

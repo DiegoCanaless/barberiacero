@@ -1,8 +1,8 @@
 "use client"
 
 import { logout } from "@/lib/redux/slices/authSlice";
-import { RootState } from "@/lib/redux/store";import { useRouter } from "next/navigation";
-''
+import { RootState } from "@/lib/redux/store";
+import { useRouter } from "next/navigation";
 import { FaRightFromBracket } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -18,10 +18,17 @@ const NavbarSpecial = () => {
 
     const Logout = async () => {
         try {
+
+            const token = localStorage.getItem("token");
+
             await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
                 method: "POST",
-                credentials: "include",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
             });
+
+            localStorage.removeItem("token")
 
             dispatch(logout());
             router.push("/");

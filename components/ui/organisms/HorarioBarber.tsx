@@ -36,6 +36,8 @@ const HorarioBarber = () => {
 
     const handleSubmit = async () => {
         try {
+            const token = localStorage.getItem("token")
+
             const payload = (Object.entries(horarios) as [DiaSemana, HorarioDia][])
                 .filter(([_, h]) => h.activo)
                 .map(([dia, h]) => ({
@@ -47,9 +49,9 @@ const HorarioBarber = () => {
 
             await fetch(`${process.env.NEXT_PUBLIC_API_URL}/horarios`, {
                 method: "POST",
-                credentials: "include",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
                 },
                 body: JSON.stringify(payload),
             });
@@ -71,8 +73,12 @@ const HorarioBarber = () => {
     useEffect(() => {
         const traerHorarios = async () => {
             try {
+                const token = localStorage.getItem("token")
+
                 const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/horarios/mios`, {
-                    credentials: "include"
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
                 })
 
                 const data = await res.json();

@@ -42,8 +42,12 @@ const TurnoModal = ({ onClose, onToast }: TurnoModal) => {
     useEffect(() => {
         const me = async () => {
             try {
+                const token = localStorage.getItem("token")
+
                 const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
-                    credentials: "include"
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
                 });
                 const data: UserResponseDTO = await res.json();
                 setUser(data)
@@ -54,8 +58,12 @@ const TurnoModal = ({ onClose, onToast }: TurnoModal) => {
 
         const barbers = async () => {
             try {
+                const token = localStorage.getItem("token")
+
                 const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/usuarios/getBarbers`, {
-                    credentials: "include"
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
                 })
                 const data: UserResponseDTO[] = await res.json();
                 setBarberos(data)
@@ -91,18 +99,19 @@ const TurnoModal = ({ onClose, onToast }: TurnoModal) => {
                         validationSchema={turnoSchema}
                         onSubmit={async (values) => {
                             try {
+                                const token = localStorage.getItem("token")
+
                                 if (!values.horario) {
                                     onToast("Selecciona un horario", ToastState.WARNING)
                                     return
                                 }
 
-                                // ✅ Fix UTC: formatea la fecha sin conversión de zona horaria
                                 const fecha = formatFecha(values.fecha!)
 
                                 const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/turnos`, {
                                     method: "POST",
-                                    headers: { "Content-Type": "application/json" },
-                                    credentials: "include",
+                                    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                                    
                                     body: JSON.stringify({
                                         barberID: Number(values.barberID),
                                         servicioID: Number(values.servicioID),
@@ -129,9 +138,15 @@ const TurnoModal = ({ onClose, onToast }: TurnoModal) => {
 
                                 const fetchServicios = async () => {
                                     try {
+                                        const token = localStorage.getItem("token")
+
                                         const res = await fetch(
                                             `${process.env.NEXT_PUBLIC_API_URL}/barberos/${values.barberID}/servicios`,
-                                            { credentials: "include" }
+                                            {
+                                                headers: {
+                                                    Authorization: `Bearer ${token}`
+                                                }
+                                            }
                                         );
                                         const data: ServicioResponseDTO[] = await res.json();
                                         setServicio(data);
@@ -155,8 +170,14 @@ const TurnoModal = ({ onClose, onToast }: TurnoModal) => {
 
                                 const fetchDias = async () => {
                                     try {
+                                        const token = localStorage.getItem("token")
+
                                         const res = await fetch(
-                                            `${process.env.NEXT_PUBLIC_API_URL}/barberos/${values.barberID}/horarios`
+                                            `${process.env.NEXT_PUBLIC_API_URL}/barberos/${values.barberID}/horarios`, {
+                                                headers:{
+                                                    Authorization: `Bearer ${token}`
+                                                }
+                                            }
                                         )
                                         const data = await res.json()
                                         setDiasBarbero(data)
@@ -178,18 +199,19 @@ const TurnoModal = ({ onClose, onToast }: TurnoModal) => {
 
                                 const fetchHorarios = async () => {
                                     try {
-                                        // ✅ Fix UTC: formatea la fecha sin conversión de zona horaria
+                                        const token = localStorage.getItem("token")
                                         const fecha = formatFecha(values.fecha!)
 
                                         const res = await fetch(
                                             `${process.env.NEXT_PUBLIC_API_URL}/turnos/horarios-disponibles?barberID=${values.barberID}&fecha=${fecha}&servicioID=${values.servicioID}`,
-                                            { credentials: "include" }
+                                            { headers: {
+                                                Authorization: `Bearer ${token}`
+                                            }}
                                         )
 
                                         const data = await res.json()
 
-  
-                                        // ✅ Garantiza siempre un array aunque el backend devuelva error
+
                                         sethorariosDisponibles(Array.isArray(data) ? data : [])
 
                                     } catch (error: unknown) {

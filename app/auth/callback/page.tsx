@@ -14,7 +14,7 @@ export default function AuthCallback() {
     useEffect(() => {
         if (status === "loading") return;
 
-        if (!session?.backendToken) {
+        if (!session) {
             router.push("/");
             return;
         }
@@ -22,18 +22,16 @@ export default function AuthCallback() {
         const handleAuth = async () => {
             try {
                 if (session.backendToken) {
-                    // ✅ Guardar en cookie (para middleware)
-                    document.cookie = `token=${session.backendToken}; path=/; SameSite=Lax`;
-
-
-                    // 🔥 ESTO TE FALTABA
                     localStorage.setItem("token", session.backendToken);
+                } else {
+                    router.push("/");
+                    return;
                 }
-
                 if (session.user) {
                     dispatch(loginSuccess(session.user));
                 }
-
+                await new Promise(resolve => setTimeout(resolve, 200));
+                
                 if (session.user?.profile_complete === 0) {
                     router.push("/completarPerfil");
                 } else {

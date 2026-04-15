@@ -16,46 +16,36 @@ export default function AuthProvider({
 
         const checkAuth = async () => {
             try {
-                // 👇 Intentar primero verificar con el backend
-                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
-                    credentials: "include"
-                })
+                const token = localStorage.getItem("token");
 
-                if (res.ok) {
-                    const user = await res.json()
-                    dispatch(loginSuccess(user))
-                    return
-                }
-
-                // 👇 Si el backend no responde, intentar con localStorage
-                const token = localStorage.getItem("authToken");
                 if (!token) {
-                    console.log("No hay token en localStorage");
-                    return
+                    console.log("No hay token");
+                    return;
                 }
 
-
-                // Hacer una request con el token en el header
-                const meRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
-                    credentials: "include",
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
                     headers: {
-                        "Authorization": `Bearer ${token}`
+                        Authorization: `Bearer ${token}`
                     }
-                })
+                });
 
-                if (meRes.ok) {
-                    const user = await meRes.json()
-                    dispatch(loginSuccess(user))
+                if (!res.ok) {
+                    console.log("Token inválido o expirado");
+                    localStorage.removeItem("token");
+                    return;
                 }
+
+                const user = await res.json();
+                dispatch(loginSuccess(user));
 
             } catch (error) {
-                console.error("Error verificando autenticación:", error)
+                console.error("Error verificando autenticación:", error);
             }
         }
 
-        checkAuth()
+        checkAuth();
 
-    }, [dispatch])
+    }, [dispatch]);
 
     return <>{children}</>
 }

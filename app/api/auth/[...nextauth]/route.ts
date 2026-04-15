@@ -32,6 +32,11 @@ const handler = NextAuth({
                     return false;
                 }
 
+                if (!data.token || !data.user) {
+                    return false;
+                }
+
+
                 // 👉 Guardamos datos del backend
                 user.backendToken = data.token;
                 user.backendUser = data.user;

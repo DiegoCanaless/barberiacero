@@ -1,5 +1,7 @@
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 import SuperAdminPanel from "@/components/dashboard/SuperAdminPanel";
 import UsuarioPanel from "@/components/dashboard/UsuarioPanel";
@@ -7,32 +9,57 @@ import BarberoPanel from "@/components/dashboard/BarberoPanel";
 
 import { UserResponseDTO } from "@/types/entities/user/UserResponseDTO";
 
-export default async function DashboardPage() {
+export default function DashboardPage() {
+    const router = useRouter();
+    const [user, setUser] = useState<UserResponseDTO | null>(null);
+    const [loading, setLoading] = useState(true);
 
-    const token = (await cookies()).get("token")?.value;
-    
-    if (!token) {
-        redirect("/");
-    }
+    useEffect(() => {
+        const fetchUser = async () => {
+            const token = localStorage.getItem("token");
 
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
-        headers: {
-            Cookie: `token=${token}`,
-        },
-        cache: "no-store",
-    });
+            if (!token) {
+                router.push("/");
+                return;
+            }
 
-    if (!res.ok) {
-        redirect("/");
-    }
+            try {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
 
-    const user: UserResponseDTO = await res.json();
+                if (!res.ok) {
+                    localStorage.removeItem("token");
+                    router.push("/");
+                    return;
+                }
 
-    if (user.profile_complete === 0) {
-        redirect("/completarPerfil");
-    }
+                const data: UserResponseDTO = await res.json();
 
-    // 🔥 Render por rol
+                // 🚨 perfil incompleto
+                if (data.profile_complete === 0) {
+                    router.push("/completarPerfil");
+                    return;
+                }
+
+                setUser(data);
+            } catch (error) {
+                console.error(error);
+                router.push("/");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchUser();
+    }, [router]);
+
+    if (loading) return null;
+
+    if (!user) return null;
+
     if (user.role === "admin") return <SuperAdminPanel />;
     if (user.role === "barber") return <BarberoPanel />;
     if (user.role === "usuario") return <UsuarioPanel user={user} />;

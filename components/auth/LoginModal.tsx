@@ -44,7 +44,6 @@ const LoginModal = ({ onClose, onToast, openRegister }: LoginModalProps) => {
               try {
                 const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
                   method: "POST",
-                  credentials: "include",
                   headers: {
                     "Content-Type": "application/json"
                   },
@@ -64,6 +63,8 @@ const LoginModal = ({ onClose, onToast, openRegister }: LoginModalProps) => {
 
 
                 const data: AuthResponseDTO = await res.json();
+
+                localStorage.setItem("token", data.token)
 
                 dispatch(loginSuccess(data.user));
 
@@ -135,7 +136,7 @@ const LoginModal = ({ onClose, onToast, openRegister }: LoginModalProps) => {
           </button>
 
           <div className="flex justify-center items-center mt-4 ">
-            <button onClick={() => signIn("google", { callbackUrl: "/auth/callback"})} className="flex items-center justify-center cursor-pointer bg-white text-black border rounded-md shadow-sm px-4 py-2 text-sm font-medium hover:bg-gray-50">
+            <button onClick={() => signIn("google", { callbackUrl: "/auth/callback" })} className="flex items-center justify-center cursor-pointer bg-white text-black border rounded-md shadow-sm px-4 py-2 text-sm font-medium hover:bg-gray-50">
               <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google logo" className="w-5 h-5 mr-2" /> Iniciar sesión con Google
             </button>
           </div>
@@ -144,7 +145,7 @@ const LoginModal = ({ onClose, onToast, openRegister }: LoginModalProps) => {
 
 
         </div>
-      </div>
+      </div >
     </>
   )
 }

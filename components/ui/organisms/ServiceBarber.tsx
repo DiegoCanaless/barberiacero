@@ -17,8 +17,12 @@ const ServiceBarber = () => {
   useEffect(() => {
     const traerServicios = async () => {
       try {
+        const token = localStorage.getItem("token")
+
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/servicios/activos`, {
-          credentials: "include"
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         })
 
         const data: ServicioResponseDTO[] = await res.json()
@@ -35,8 +39,12 @@ const ServiceBarber = () => {
 
     const traerMisServicios = async () => {
       try {
+        const token = localStorage.getItem("token")
+
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/servicios/mios`, {
-          credentials: "include"
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         })
 
         const data = await res.json()
@@ -68,11 +76,14 @@ const ServiceBarber = () => {
 
   const guardarServicios = async () => {
     try {
+
+      const token = localStorage.getItem("token")
+      
       await fetch(`${process.env.NEXT_PUBLIC_API_URL}/servicios/agregarServicio`, {
         method: "POST",
-        credentials: "include",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({ servicios: misServicios })
       })

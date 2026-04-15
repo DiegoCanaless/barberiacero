@@ -28,8 +28,12 @@ const GestionAdmin = () => {
   useEffect(() => {
     const traerTurnos = async () => {
       try {
+        const token = localStorage.getItem("token")
+
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/turnos/activos`, {
-          credentials: "include",
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         });
         const data: TurnoResponseDTO[] = await res.json();
         setTurnos(data)
@@ -41,8 +45,12 @@ const GestionAdmin = () => {
 
     const traerHistorial = async () => {
       try {
+        const token = localStorage.getItem("token")
+
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/turnos/historial?page=${page}&limit=15`, {
-          credentials: "include"
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         })
 
         const data = await res.json();
@@ -59,9 +67,13 @@ const GestionAdmin = () => {
 
   const handleFinalizar = async (id: number) => {
     try {
+      const token = localStorage.getItem("token")
+
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/turnos/finalizar/${id}`, {
         method: "PUT",
-        credentials: "include",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       })
 
       if (!res.ok) {

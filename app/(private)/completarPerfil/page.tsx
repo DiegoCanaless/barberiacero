@@ -38,11 +38,13 @@ const CompletarPerfil = () => {
                     onSubmit={async (values, { setSubmitting }) => {
                         try {
 
+                            const token = localStorage.getItem("token");
+
                             const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/completarPerfil`, {
                                 method: "PUT",
-                                credentials: "include",
                                 headers: {
-                                    "Content-Type": "application/json"
+                                    "Content-Type": "application/json",
+                                    Authorization: `Bearer ${token}`
                                 },
                                 body: JSON.stringify(values)
                             });

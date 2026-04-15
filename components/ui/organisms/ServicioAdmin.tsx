@@ -23,8 +23,12 @@ const ServicioAdmin = () => {
   useEffect(() => {
     const traerServicios = async () => {
       try {
+        const token = localStorage.getItem("token")
+
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/servicios/`, {
-          credentials: "include",
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         })
 
         if (!res.ok) {
@@ -50,9 +54,14 @@ const ServicioAdmin = () => {
 
   const handleState = async (servicio: ServicioResponseDTO) => {
     try {
+      const token = localStorage.getItem("token")
+
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/servicios/actualizarEstado/${servicio.id_servicio}`, {
         method: "PUT",
-        credentials: "include"
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        }
       })
 
       if (!res.ok) {
@@ -108,11 +117,14 @@ const ServicioAdmin = () => {
             validationSchema={serviceSchema}
             onSubmit={async (values, { resetForm }) => {
               try {
+                const token = localStorage.getItem("token")
+
                 const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/servicios/`, {
                   method: "POST",
-                  credentials: "include",
+
                   headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
                   },
                   body: JSON.stringify(values)
                 })
@@ -200,9 +212,9 @@ const ServicioAdmin = () => {
                 <div className="flex items-center justify-between mt-6">
                   <span className={`text-xs font-semibold px-3 py-1 rounded-full
                       ${servicio.estado === State.ACTIVO
-                        ? "bg-green-100 text-green-600"
-                        : "bg-red-100 text-red-500"
-                      }`}>
+                      ? "bg-green-100 text-green-600"
+                      : "bg-red-100 text-red-500"
+                    }`}>
                     {servicio.estado}
                   </span>
 

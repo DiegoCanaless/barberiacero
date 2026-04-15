@@ -33,11 +33,15 @@ const AgendaBarber = () => {
     useEffect(() => {
         const traerData = async () => {
             try {
-
+                const token = localStorage.getItem("token")
                 if (seleccion === "Historial") {
                     const res = await fetch(
                         `${process.env.NEXT_PUBLIC_API_URL}/turnos/barbero?estado=historial&page=${page}&limit=10`,
-                        { credentials: "include" }
+                        {
+                            headers:{ 
+                                Authorization: `Bearer ${token}`
+                            }
+                        }
                     );
 
                     const data = await res.json();
@@ -47,7 +51,11 @@ const AgendaBarber = () => {
                 } else {
                     const res = await fetch(
                         `${process.env.NEXT_PUBLIC_API_URL}/turnos/barbero?estado=activo`,
-                        { credentials: "include" }
+                        { 
+                            headers:{
+                                Authorization: `Bearer ${token}`
+                            }
+                        }
                     );
 
                     const data = await res.json();
@@ -65,9 +73,14 @@ const AgendaBarber = () => {
 
     const handleFinalizar = async (id: number) => {
         try {
+            const token = localStorage.getItem("token")
+
             const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/turnos/finalizar/${id}`, {
                 method: "PUT",
-                credentials: "include",
+                headers:{
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                }
             })
 
             if (!res.ok) {
