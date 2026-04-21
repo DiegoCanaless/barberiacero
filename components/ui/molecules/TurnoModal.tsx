@@ -6,6 +6,8 @@ import { useEffect, useState } from "react";
 import { UserResponseDTO } from "@/types/entities/user/UserResponseDTO";
 import { ServicioResponseDTO } from "@/types/entities/services/ServicioResponseDTO";
 import { DatePickerDemo } from "../organisms/DatePicker";
+import { socket } from "@/lib/socket"
+
 
 interface TurnoModal {
     onClose: () => void;
@@ -111,7 +113,7 @@ const TurnoModal = ({ onClose, onToast }: TurnoModal) => {
                                 const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/turnos`, {
                                     method: "POST",
                                     headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-                                    
+
                                     body: JSON.stringify({
                                         barberID: Number(values.barberID),
                                         servicioID: Number(values.servicioID),
@@ -174,10 +176,10 @@ const TurnoModal = ({ onClose, onToast }: TurnoModal) => {
 
                                         const res = await fetch(
                                             `${process.env.NEXT_PUBLIC_API_URL}/barberos/${values.barberID}/horarios`, {
-                                                headers:{
-                                                    Authorization: `Bearer ${token}`
-                                                }
+                                            headers: {
+                                                Authorization: `Bearer ${token}`
                                             }
+                                        }
                                         )
                                         const data = await res.json()
                                         setDiasBarbero(data)
@@ -204,9 +206,11 @@ const TurnoModal = ({ onClose, onToast }: TurnoModal) => {
 
                                         const res = await fetch(
                                             `${process.env.NEXT_PUBLIC_API_URL}/turnos/horarios-disponibles?barberID=${values.barberID}&fecha=${fecha}&servicioID=${values.servicioID}`,
-                                            { headers: {
-                                                Authorization: `Bearer ${token}`
-                                            }}
+                                            {
+                                                headers: {
+                                                    Authorization: `Bearer ${token}`
+                                                }
+                                            }
                                         )
 
                                         const data = await res.json()
@@ -225,6 +229,40 @@ const TurnoModal = ({ onClose, onToast }: TurnoModal) => {
                                 fetchHorarios()
 
                             }, [values.barberID, values.servicioID, values.fecha])
+
+                            // SOCKET ESCUCHANDO HORARIOS
+
+                            useEffect(() => {
+                                if (!socket.connected) socket.connect();
+
+                                const handleNuevoTurno = (nuevoTurno: any) => {
+                                    if (!values.fecha || !values.barberID) return;
+
+                                    const mismaFecha = formatFecha(values.fecha) === nuevoTurno.fecha;
+                                    const mismoBarbero = Number(values.barberID) === nuevoTurno.barbero?.id_usuario;
+
+                                    if (mismaFecha && mismoBarbero) {
+                                        const hora = nuevoTurno.horario.slice(0, 5);
+
+                                        sethorariosDisponibles(prev =>
+                                            prev.filter(h => h !== hora)
+                                        );
+
+                                        if (values.horario === hora) {
+                                            setFieldValue("horario", "");
+                                        }
+                                    }
+                                };
+
+                                socket.on("nuevo_turno", handleNuevoTurno);
+
+                                return () => {
+                                    socket.off("nuevo_turno", handleNuevoTurno);
+                                };
+                            }, [values.barberID, values.fecha, values.horario]);
+
+
+
 
 
                             return (

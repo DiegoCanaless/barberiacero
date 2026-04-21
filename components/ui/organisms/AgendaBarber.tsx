@@ -6,6 +6,7 @@ import { useSelector } from "react-redux"
 import TablaDatos from "./TablaDatos";
 import { RoleUser } from "@/types/enum/roleUser";
 import Toast, { ToastState } from "../feedback/Toast";
+import { socket } from "@/lib/socket";
 
 
 const AgendaBarber = () => {
@@ -30,46 +31,67 @@ const AgendaBarber = () => {
         (state: RootState) => state.auth
     );
 
-    useEffect(() => {
-        const traerData = async () => {
-            try {
-                const token = localStorage.getItem("token")
-                if (seleccion === "Historial") {
-                    const res = await fetch(
-                        `${process.env.NEXT_PUBLIC_API_URL}/turnos/barbero?estado=historial&page=${page}&limit=10`,
-                        {
-                            headers:{ 
-                                Authorization: `Bearer ${token}`
-                            }
+    const traerData = async () => {
+        try {
+            const token = localStorage.getItem("token")
+            if (seleccion === "Historial") {
+                const res = await fetch(
+                    `${process.env.NEXT_PUBLIC_API_URL}/turnos/barbero?estado=historial&page=${page}&limit=10`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`
                         }
-                    );
+                    }
+                );
 
-                    const data = await res.json();
-                    setHistorial(data.data);
-                    setPagination(data.pagination);
+                const data = await res.json();
+                setHistorial(data.data);
+                setPagination(data.pagination);
 
-                } else {
-                    const res = await fetch(
-                        `${process.env.NEXT_PUBLIC_API_URL}/turnos/barbero?estado=activo`,
-                        { 
-                            headers:{
-                                Authorization: `Bearer ${token}`
-                            }
+            } else {
+                const res = await fetch(
+                    `${process.env.NEXT_PUBLIC_API_URL}/turnos/barbero?estado=activo`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`
                         }
-                    );
+                    }
+                );
 
-                    const data = await res.json();
-                    setTurnos(data);
-                }
-
-            } catch (error) {
-                console.error(error);
+                const data = await res.json();
+                setTurnos(data);
             }
+
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    useEffect(() => {
+        traerData()
+    }, [seleccion, page])
+
+    useEffect(() => {
+        if (!socket.connected) socket.connect();
+
+        const actualizar = (turno: any) => {
+            // 🔒 SOLO si es MI barbero
+            if (turno?.barbero?.id_usuario !== user?.id_usuario) return;
+
+            console.log("🔄 Actualizando agenda barbero");
+            traerData();
         };
 
-        traerData();
+        socket.on("nuevo_turno", actualizar);
+        socket.on("turno_finalizado", actualizar);
+        socket.on("turno_cancelado", actualizar);
 
-    }, [seleccion, page]);
+        return () => {
+            socket.off("nuevo_turno", actualizar);
+            socket.off("turno_finalizado", actualizar);
+            socket.off("turno_cancelado", actualizar);
+        };
+    }, [user, seleccion, page]);
 
     const handleFinalizar = async (id: number) => {
         try {
@@ -77,7 +99,7 @@ const AgendaBarber = () => {
 
             const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/turnos/finalizar/${id}`, {
                 method: "PUT",
-                headers:{
+                headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`
                 }

@@ -12,6 +12,8 @@ import { TurnoResponseDTO } from "@/types/entities/turno/TurnoResponseDTO";
 import Toast, { ToastState } from "../ui/feedback/Toast";
 import Navbar from "../layout/Navbar";
 
+import { socket } from "@/lib/socket"
+
 interface UsuarioPanelProps {
     user: UserResponseDTO
 }
@@ -60,7 +62,81 @@ export default function UsuarioPanel({ user }: UsuarioPanelProps) {
         };
 
         traerTurnos();
+
+        // SOCKETS
+
+        socket.connect();
+
+        socket.on("connect", () => {
+            console.log("Conectado: ", socket.id)
+        })
+
+        socket.on("nuevo_turno", (nuevoTurno) => {
+            setTurnos((prev) => {
+                const existe = prev.some(t => t.id_turno === nuevoTurno.id_turno);
+                if (existe) return prev;
+
+                return [...prev, nuevoTurno];
+            });
+
+            if (nuevoTurno.clienteID === user.id_usuario) {
+                setReservado({
+                    ...nuevoTurno,
+                    id_turno: nuevoTurno.id_turno
+                });
+            }
+
+        });
+
+
+        socket.on("turno_cancelado", ({ id_turno }) => {
+            setTurnos((prev) =>
+                prev.map((t) =>
+                    t.id_turno === id_turno ? { ...t, estado: "Cancelado" } : t
+                )
+            )
+
+            setReservado((prev) =>
+                prev?.id_turno === id_turno ? null : prev
+            );
+
+        });
+
+        socket.on("turno_finalizado", async ({ id_turno }) => {
+            try {
+                const token = localStorage.getItem("token");
+
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/turnos/usuario`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+
+                const data: TurnoResponseDTO[] = await res.json();
+
+                setTurnos(data);
+
+                const turnoReservado = data.find(t => t.estado === "Reservado");
+                setReservado(turnoReservado || null);
+
+            } catch (error) {
+                console.error(error);
+            }
+        });
+
+
+
+
+        return () => {
+            socket.off("connect");
+            socket.off("nuevo_turno");
+            socket.off("turno_cancelado")
+            socket.off("turno_finalizado")
+            socket.disconnect();
+        }
+
     }, []);
+
 
 
     const handleLogout = async () => {
@@ -105,12 +181,25 @@ export default function UsuarioPanel({ user }: UsuarioPanelProps) {
                     return;
                 }
 
+                // 🔥 VOLVER A TRAER TURNOS
+                const resTurnos = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/turnos/usuario`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+
+                const data: TurnoResponseDTO[] = await resTurnos.json();
+
+                setTurnos(data);
+
+                const turnoReservado = data.find(t => t.estado === "Reservado");
+                setReservado(turnoReservado || null);
+
                 setToast({
                     text: "Turno cancelado correctamente",
                     state: ToastState.SUCCESS
                 });
 
-                setReservado(null);
             }
         } catch (error) {
             console.error(error);
@@ -121,6 +210,7 @@ export default function UsuarioPanel({ user }: UsuarioPanelProps) {
             });
         }
     };
+
 
 
 
