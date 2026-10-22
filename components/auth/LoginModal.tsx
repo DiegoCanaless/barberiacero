@@ -23,6 +23,43 @@ const LoginModal = ({ onClose, onToast, openRegister }: LoginModalProps) => {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter()
 
+  const demoAccounts = [
+    { label: "Admin", email: "admin@barberia.com", password: "123456", role: "admin" },
+    { label: "Barbero", email: "juan@barberia.com", password: "123456", role: "barber" },
+    { label: "Usuario", email: "carlos@mail.com", password: "123456", role: "usuario" },
+  ];
+
+  const loginWithDemo = async (email: string, password: string) => {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        onToast(data.message || "Error al logearse", ToastState.ERROR);
+        return;
+      }
+
+      const data: AuthResponseDTO = await res.json();
+      localStorage.setItem("token", data.token);
+      dispatch(loginSuccess(data.user));
+      onToast(`Logeado como ${email}`, ToastState.SUCCESS);
+      onClose();
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      if (data.user.profile_complete === 0) {
+        router.push("/completarPerfil");
+      } else {
+        router.push("/dashboard");
+      }
+    } catch (error) {
+      console.error("Error en login demo:", error);
+      onToast("Ocurrió un error inesperado", ToastState.ERROR);
+    }
+  };
+
   return (
     <>
       <div className="fixed inset-0 bg-black/50 z-40" onClick={onClose} />
@@ -139,6 +176,24 @@ const LoginModal = ({ onClose, onToast, openRegister }: LoginModalProps) => {
             <button onClick={() => signIn("google", { callbackUrl: "/auth/callback" })} className="flex items-center justify-center cursor-pointer bg-white text-black border rounded-md shadow-sm px-4 py-2 text-sm font-medium hover:bg-gray-50">
               <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google logo" className="w-5 h-5 mr-2" /> Iniciar sesión con Google
             </button>
+          </div>
+
+          {/* Cuentas de prueba (demo) */}
+          <div className="mt-6 border-t border-gray-200 dark:border-gray-700 pt-4">
+            <p className="text-xs text-center text-gray-500 mb-3">Cuentas de prueba (contraseña: 123456)</p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              {demoAccounts.map((acc) => (
+                <button
+                  key={acc.role}
+                  type="button"
+                  onClick={() => loginWithDemo(acc.email, acc.password)}
+                  className="flex flex-col items-center gap-1 rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-xs hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+                >
+                  <span className="font-semibold">{acc.label}</span>
+                  <span className="text-[10px] text-gray-500 break-all">{acc.email}</span>
+                </button>
+              ))}
+            </div>
           </div>
 
 
