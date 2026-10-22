@@ -4,6 +4,7 @@ import { SessionProvider } from "next-auth/react";
 import ReduxProvider from "@/lib/redux/ReduxProvider";
 import AuthProvider from "@/providers/AuthProvider";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import BackendWakeupBanner from "@/components/ui/BackendWakeupBanner";
 
 export default function Providers({
     children,
@@ -21,6 +22,7 @@ export default function Providers({
                         disableTransitionOnChange
                     >
                         {children}
+                        <BackendWakeupBanner />
                     </ThemeProvider>
                 </AuthProvider>
             </ReduxProvider>
